@@ -9,15 +9,19 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_dotenv: ^6.0.0
+  google_fonts: ^6.3.1
+  provider: ^6.1.5+1
 
 dev_dependencies:
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
 
 flutter:
   assets:
+    - .env
     - assets/images/
     - assets/lottie/
   uses-material-design: true
- 
+  # Note: Add .env file to your project root every clone this project
