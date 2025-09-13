@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "881744304659",
+    "project_id": "eco-coin-444fd",
+    "storage_bucket": "eco-coin-444fd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:881744304659:android:c0807f5626345189bd3de6",
+        "android_client_info": {
+          "package_name": "com.example.eco_coin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAksCOkhimk46KbutDzaYKpBxTTR87KeIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
