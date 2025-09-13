@@ -15,12 +15,13 @@ class MainApp extends StatelessWidget {
     // Ensure Flutter bindings are initialized
     WidgetsFlutterBinding.ensureInitialized();
 
-    return MultiProvider(
-      providers: [
-        // Add your global providers here
-      ],
-      child: const MyApp(),
-    );
+    // return MultiProvider(
+    //   providers: [
+    //     // Add your global providers here
+    //   ],
+    //   child: const MyApp(),
+    // );
+    return const MyApp();
   }
 }
 
