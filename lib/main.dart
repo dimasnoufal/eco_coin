@@ -3,7 +3,6 @@ import 'package:eco_coin/app/routes/app_pages.dart';
 import 'package:eco_coin/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized
