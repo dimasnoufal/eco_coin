@@ -35,6 +35,38 @@ class AppColor {
 
   static const kBottomGradient = [Color(0xFF0F172A), Color(0xFF0EA5E9)];
 
+  // Emerald Colors
+  static const emeraldDefault = Color(0xFF2AC769);
+  static const emeraldDark = Color(0xFF1AB759);
+  static const emeraldLight = Color(0xFF40DD7F);
+  static const emeraldBg = Color(0xFFACFFCD);
+  static const emeraldBgLight = Color(0xFFCFFFE5);
+
+  // Orange Colors
+  static const orangeDefault = Color(0xFFF6A609);
+  static const orangeDark = Color(0xFFE89806);
+  static const orangeLight = Color(0xFFFFBC1F);
+  static const orangeBg = Color(0xFFFFEFCA);
+
+  // Neutral Colors
+  static const neutralBlack = Color(0xFF161616);
+  static const neutral80 = Color(0xFF2D2D2D);
+  static const neutral60 = Color(0xFF3E3E3E);
+  static const neutral50 = Color(0xFF4D4D4D);
+  static const neutral40 = Color(0xFF737373);
+  static const neutral30 = Color(0xFFB3B3B3);
+  static const neutral20 = Color(0xFFECECEC);
+  static const neutral10 = Color(0xFFF3F3F3);
+  static const neutral5 = Color(0xFFF4F4F4);
+  static const neutralWhite = Color(0xFFFFFFFF);
+
+  // Ruby Colors
+  static const rubyDefault = Color(0xFFFB4E4E);
+  static const rubyDark = Color(0xFFE93C3C);
+  static const rubyLight = Color(0xFFFF6262);
+  static const rubyBg = Color(0xFFFFC1C1);
+  static const rubyBgLight = Color(0xFFFFDEDE);
+
   // Text Colors
   static const kTextBlack = kSoftBlack;
   static const kTextWhite = kWhite;
