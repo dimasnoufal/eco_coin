@@ -1,8 +1,10 @@
 import 'package:eco_coin/app/helper/shared/app_color.dart';
+import 'package:eco_coin/app/modules/home/provider/home_provider.dart';
 import 'package:eco_coin/app/routes/app_pages.dart';
 import 'package:eco_coin/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized
@@ -11,13 +13,11 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
-    // MultiProvider(
-    //   providers: [
-    //     // Add your global providers here
-    //   ],
-    //   child: const MainApp(),
-    // ),
-    const MainApp(),
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => HomeProvider())],
+      child: const MainApp(),
+    ),
+    // const MainApp(),
   );
 }
 

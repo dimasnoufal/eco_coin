@@ -1,3 +1,4 @@
+import 'package:eco_coin/app/modules/home/ui/home_view.dart';
 import 'package:eco_coin/app/routes/app_routes.dart';
 import 'package:eco_coin/app/routes/splash_page.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ class AppPages {
           builder: (_) =>
               const Scaffold(body: Center(child: Text('Onboarding Page'))),
         );
+      case Routes.home:
+        return MaterialPageRoute(builder: (context) => const HomeView());
       default:
         return MaterialPageRoute(
           builder: (_) =>
