@@ -21,7 +21,7 @@ class AppPages {
       case Routes.login:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case Routes.register:
-        return MaterialPageRoute(builder: (_) => const Registerscreen());
+        return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case Routes.home:
         return MaterialPageRoute(builder: (context) => const HomeView());
       case Routes.profile:

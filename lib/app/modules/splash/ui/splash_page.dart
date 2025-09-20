@@ -90,19 +90,6 @@ class _SplashPageState extends State<SplashPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Optional: Loading indicator
-              // Consumer<SharedPrefProvider>(
-              //   builder: (context, provider, child) {
-              //     if (provider.isLoading) {
-              //       return const CircularProgressIndicator(
-              //         valueColor: AlwaysStoppedAnimation<Color>(
-              //           AppColor.neutralWhite,
-              //         ),
-              //       );
-              //     }
-              //     return const SizedBox.shrink();
-              //   },
-              // ),
             ],
           ),
         ),

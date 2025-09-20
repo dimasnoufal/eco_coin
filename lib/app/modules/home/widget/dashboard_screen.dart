@@ -7,12 +7,14 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          ProfileContainer(),
-          FastActionContainer(),
-          RecycleCategoryContainer(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ProfileContainer(),
+            FastActionContainer(),
+            RecycleCategoryContainer(),
+          ],
+        ),
       ),
     );
   }
@@ -187,76 +189,81 @@ class FastActionContainer extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Material(
-                  color: AppColor.emeraldDefault,
-                  borderRadius: BorderRadius.circular(12),
-                  child: InkWell(
-                    onTap: () {
-                      // Navigate to the scan screen
-                    },
+                Expanded(
+                  child: Material(
+                    color: AppColor.emeraldDefault,
                     borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.all(12.0),
-                      width: 175,
-                      height: 95,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/ic_camera_outline_white.png',
-                            width: 32,
-                            height: 32,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Scan Sampah',
-                            style: AppColor.whiteTextStyle.copyWith(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                    child: InkWell(
+                      onTap: () {
+                        // Navigate to the scan screen
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(12.0),
+                        width: 175,
+                        height: 95,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/ic_camera_outline_white.png',
+                              width: 32,
+                              height: 32,
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              'Scan Sampah',
+                              style: AppColor.whiteTextStyle.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-                Material(
-                  color: AppColor.kWhite,
-                  borderRadius: BorderRadius.circular(12),
-                  child: InkWell(
-                    onTap: () {
-                      // Navigate to the rewards screen
-                    },
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Material(
+                    color: AppColor.kWhite,
                     borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.all(12.0),
-                      width: 175,
-                      height: 95,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColor.emeraldDefault),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/ic_gift_outline_green.png',
-                            width: 32,
-                            height: 32,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Tukar Reward',
-                            style: TextStyle(
-                              color: AppColor.kPrimaryColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                    child: InkWell(
+                      onTap: () {
+                        // Navigate to the rewards screen
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(12.0),
+                        width: 175,
+                        height: 95,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColor.emeraldDefault),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/ic_gift_outline_green.png',
+                              width: 32,
+                              height: 32,
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              'Tukar Reward',
+                              style: TextStyle(
+                                color: AppColor.kPrimaryColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
