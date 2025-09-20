@@ -10,6 +10,7 @@ import 'package:eco_coin/app/services/firebase_auth_service.dart';
 import 'package:eco_coin/app/services/local_storage_services.dart';
 import 'package:eco_coin/app/services/shared_preferences_services.dart';
 import 'package:eco_coin/app/services/user_service.dart';
+import 'package:eco_coin/app/services/waste_detection_service.dart';
 import 'package:eco_coin/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ void main() async {
   final authService = FirebaseAuthService(null);
   final userService = UserService();
   final localStorageService = LocalStorageService();
+  final wasteDetectionService = WasteDetectionService();
 
   // Debug permission status on app start
   if (Platform.isIOS) {
@@ -52,6 +54,7 @@ void main() async {
             localStorageService,
           ),
         ),
+        Provider.value(value: wasteDetectionService),
       ],
       child: const MainApp(),
     ),

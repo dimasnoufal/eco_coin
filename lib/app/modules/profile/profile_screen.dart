@@ -1,5 +1,6 @@
 import 'package:eco_coin/app/helper/firebase_auth_status.dart';
 import 'package:eco_coin/app/helper/shared/app_color.dart';
+import 'package:eco_coin/app/helper/shared/common_utils.dart';
 import 'package:eco_coin/app/helper/shared/widget/local_image.dart';
 import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
 import 'package:eco_coin/app/provider/shared_pref_provider.dart';
@@ -97,10 +98,7 @@ class ProfileScreen extends StatelessWidget {
 
               // Join Date
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: AppColor.neutralWhite.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(16),
@@ -150,7 +148,7 @@ class ProfileScreen extends StatelessWidget {
             icon: Icons.monetization_on,
             title: "Tukar Koin",
             subtitle: "Tukar EcoCoin dengan reward",
-            onTap: () => () {},
+            onTap: () => CommonUtils.showComingSoonSnackBar(context),
           ),
 
           _buildMenuItem(
@@ -158,7 +156,7 @@ class ProfileScreen extends StatelessWidget {
             icon: Icons.group,
             title: "Gabung dengan Komunitas",
             subtitle: "Bergabung dengan komunitas eco-friendly",
-            onTap: () => () {},
+            onTap: () => CommonUtils.launchCommunityWebsite(context),
           ),
 
           _buildMenuItem(
@@ -193,13 +191,13 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildMenuItem(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-    bool showDivider = true,
-  }) {
+      BuildContext context, {
+        required IconData icon,
+        required String title,
+        required String subtitle,
+        required VoidCallback onTap,
+        bool showDivider = true,
+      }) {
     return Column(
       children: [
         InkWell(
@@ -217,7 +215,11 @@ class ProfileScreen extends StatelessWidget {
                     color: AppColor.neutral10,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: AppColor.neutral40, size: 24),
+                  child: Icon(
+                    icon,
+                    color: AppColor.neutral40,
+                    size: 24,
+                  ),
                 ),
 
                 const SizedBox(width: 16),
@@ -247,14 +249,22 @@ class ProfileScreen extends StatelessWidget {
                 ),
 
                 // Arrow
-                Icon(Icons.chevron_right, color: AppColor.neutral40, size: 24),
+                Icon(
+                  Icons.chevron_right,
+                  color: AppColor.neutral40,
+                  size: 24,
+                ),
               ],
             ),
           ),
         ),
 
         if (showDivider)
-          Divider(height: 1, color: AppColor.neutral20, indent: 64),
+          Divider(
+            height: 1,
+            color: AppColor.neutral20,
+            indent: 64,
+          ),
       ],
     );
   }
@@ -275,7 +285,11 @@ class ProfileScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.logout, color: AppColor.rubyDefault, size: 20),
+                Icon(
+                  Icons.logout,
+                  color: AppColor.rubyDefault,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   authProvider.authStatus == FirebaseAuthStatus.signingOut
@@ -295,10 +309,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Future<void> _handleLogout(
-    BuildContext context,
-    FirebaseAuthProvider authProvider,
-    SharedPrefProvider sharedPrefProvider,
-  ) async {
+      BuildContext context,
+      FirebaseAuthProvider authProvider,
+      SharedPrefProvider sharedPrefProvider,
+      ) async {
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
@@ -312,7 +326,9 @@ class ProfileScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppColor.rubyDefault),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColor.rubyDefault,
+            ),
             child: const Text('Keluar'),
           ),
         ],
@@ -332,7 +348,7 @@ class ProfileScreen extends StatelessWidget {
           Navigator.pushNamedAndRemoveUntil(
             context,
             Routes.login,
-            (route) => false,
+                (route) => false,
           );
         }
       } catch (e) {
@@ -352,18 +368,8 @@ class ProfileScreen extends StatelessWidget {
     if (date == null) return 'Tanggal tidak diketahui';
 
     final months = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
     ];
 
     return '${months[date.month - 1]} ${date.year}';
@@ -399,20 +405,20 @@ class LocalProfileAvatar extends StatelessWidget {
             backgroundColor: AppColor.neutral20,
             child: imagePath != null && imagePath!.isNotEmpty
                 ? ClipOval(
-                    child: LocalImageWidget(
-                      imagePath: imagePath,
-                      width: radius * 2,
-                      height: radius * 2,
-                      fit: BoxFit.cover,
-                    ),
-                  )
+              child: LocalImageWidget(
+                imagePath: imagePath,
+                width: radius * 2,
+                height: radius * 2,
+                fit: BoxFit.cover,
+              ),
+            )
                 : Text(
-                    firstLetter,
-                    style: AppColor.bold.copyWith(
-                      fontSize: radius * 0.6,
-                      color: AppColor.neutralBlack,
-                    ),
-                  ),
+              firstLetter,
+              style: AppColor.bold.copyWith(
+                fontSize: radius * 0.6,
+                color: AppColor.neutralBlack,
+              ),
+            ),
           );
         },
       ),
