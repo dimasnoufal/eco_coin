@@ -7,6 +7,7 @@ abstract class Routes {
   static const String register = _Paths.register;
   static const String home = _Paths.home;
   static const String profile = _Paths.profile;
+  static const String resultDetection = _Paths.resultDetection;
 }
 
 abstract class _Paths {
@@ -18,4 +19,5 @@ abstract class _Paths {
   static const register = '/register';
   static const home = '/home';
   static const profile = '/profile';
+  static const resultDetection = '/result-detection';
 }
