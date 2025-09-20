@@ -1,5 +1,5 @@
 import 'package:eco_coin/app/services/shared_preferences_services.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class SharedPrefProvider extends ChangeNotifier {
   final SharedPreferencesService _service;
@@ -14,8 +14,11 @@ class SharedPrefProvider extends ChangeNotifier {
   bool _isLoading = true;
 
   bool get hasLogin => _hasLogin;
+
   bool get hasFinishOnboard => _hasFinishOnboarding;
+
   bool get isLoading => _isLoading;
+
   String get message => _message;
 
   void _loadSplashState() async {

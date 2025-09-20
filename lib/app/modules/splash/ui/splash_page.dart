@@ -1,6 +1,6 @@
 import 'package:eco_coin/app/helper/shared/app_color.dart';
 import 'package:eco_coin/app/helper/utils.dart';
-import 'package:eco_coin/app/modules/splash/provider/shared_pref_provider.dart';
+import 'package:eco_coin/app/provider/shared_pref_provider.dart';
 import 'package:eco_coin/app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +20,6 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _initializeApp() {
-    // Delay untuk splash screen effect
     Future.delayed(const Duration(milliseconds: 2000), () {
       _navigateBasedOnPreferences();
     });
@@ -31,9 +30,7 @@ class _SplashPageState extends State<SplashPage> {
 
     final sharedPrefProvider = context.read<SharedPrefProvider>();
 
-    // Tunggu sampai loading selesai
     if (sharedPrefProvider.isLoading) {
-      // Jika masih loading, tunggu sebentar lagi
       Future.delayed(const Duration(milliseconds: 500), () {
         _navigateBasedOnPreferences();
       });
@@ -43,15 +40,11 @@ class _SplashPageState extends State<SplashPage> {
     String routeName;
 
     if (sharedPrefProvider.hasLogin) {
-      // User sudah login -> ke dashboard/home
       routeName = Routes.home;
     } else {
-      // User belum login -> cek onboarding
       if (sharedPrefProvider.hasFinishOnboard) {
-        // Sudah selesai onboarding -> ke login
         routeName = Routes.login;
       } else {
-        // Belum selesai onboarding -> ke onboarding
         routeName = Routes.onboarding;
       }
     }

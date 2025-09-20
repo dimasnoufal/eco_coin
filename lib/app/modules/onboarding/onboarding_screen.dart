@@ -1,7 +1,7 @@
 import 'package:eco_coin/app/helper/shared/app_color.dart';
 import 'package:eco_coin/app/helper/shared/widget/shared_button.dart';
 import 'package:eco_coin/app/modules/onboarding/onboarding_page.dart';
-import 'package:eco_coin/app/modules/splash/provider/shared_pref_provider.dart';
+import 'package:eco_coin/app/provider/shared_pref_provider.dart';
 import 'package:eco_coin/app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

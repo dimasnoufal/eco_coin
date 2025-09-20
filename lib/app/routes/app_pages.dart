@@ -25,7 +25,11 @@ class AppPages {
       case Routes.home:
         return MaterialPageRoute(builder: (context) => const HomeView());
       case Routes.profile:
-        return MaterialPageRoute(builder: (_) => const Profilescreen());
+        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      case Routes.editProfile:
+        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      case Routes.history:
+        return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case Routes.resultDetection:
         return MaterialPageRoute(
           settings: settings,

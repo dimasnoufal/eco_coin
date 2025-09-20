@@ -1,7 +1,9 @@
+import 'package:eco_coin/app/helper/firebase_auth_status.dart';
 import 'package:eco_coin/app/helper/shared/app_color.dart';
 import 'package:eco_coin/app/helper/shared/widget/shared_button.dart';
 import 'package:eco_coin/app/helper/shared/widget/shared_text_form_field.dart';
-import 'package:eco_coin/app/modules/splash/provider/shared_pref_provider.dart';
+import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
+import 'package:eco_coin/app/provider/shared_pref_provider.dart';
 import 'package:eco_coin/app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +19,25 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  void _checkLoginStatus() {
+    final firebaseAuthProvider = context.read<FirebaseAuthProvider>();
+    final sharedPrefProvider = context.read<SharedPrefProvider>();
+    final navigator = Navigator.of(context);
+
+    Future.microtask(() async {
+      if (sharedPrefProvider.hasLogin && firebaseAuthProvider.isAuthenticated) {
+        await firebaseAuthProvider.updateProfile();
+        navigator.pushReplacementNamed(Routes.home);
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -29,62 +49,115 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
 
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-
+    if (email.isNotEmpty && password.isNotEmpty) {
       final sharedPrefProvider = context.read<SharedPrefProvider>();
-      await sharedPrefProvider.setHasLogin(true);
+      final firebaseAuthProvider = context.read<FirebaseAuthProvider>();
+      final navigator = Navigator.of(context);
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, Routes.home);
+      firebaseAuthProvider.clearMessage();
+
+      await firebaseAuthProvider.signInUser(email, password);
+
+      switch (firebaseAuthProvider.authStatus) {
+        case FirebaseAuthStatus.authenticated:
+          await sharedPrefProvider.setHasLogin(true);
+          navigator.pushReplacementNamed(Routes.home);
+          break;
+        default:
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(firebaseAuthProvider.message ?? "Login gagal"),
+              backgroundColor: AppColor.rubyDefault,
+            ),
+          );
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login gagal. Silakan coba lagi.')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+    } else {
+      const message = "Masukkan email dan password dengan benar";
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(message),
+          backgroundColor: AppColor.rubyDefault,
+        ),
+      );
     }
   }
 
-  Future<void> _handleGoogleLogin() async {
-    setState(() => _isLoading = true);
+  void _showForgotPasswordDialog() {
+    final emailController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
 
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-
-      final sharedPrefProvider = context.read<SharedPrefProvider>();
-      await sharedPrefProvider.setHasLogin(true);
-
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, Routes.home);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Google login gagal. Silakan coba lagi.'),
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Password'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Masukkan email untuk reset password:'),
+              const SizedBox(height: 16),
+              CustomTextFormField(
+                controller: emailController,
+                hintText: 'Email',
+                keyboardType: TextInputType.emailAddress,
+                validator: Validators.email,
+              ),
+            ],
           ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (formKey.currentState!.validate() &&
+                  emailController.text.isNotEmpty) {
+                final firebaseAuthProvider = context
+                    .read<FirebaseAuthProvider>();
+
+                firebaseAuthProvider.clearMessage();
+
+                await firebaseAuthProvider.sendPasswordReset(
+                  emailController.text.trim(),
+                );
+
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        firebaseAuthProvider.message ??
+                            "Email reset password telah dikirim",
+                      ),
+                      backgroundColor:
+                          firebaseAuthProvider.message?.contains('gagal') ==
+                              true
+                          ? AppColor.rubyDefault
+                          : AppColor.emeraldDefault,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Kirim'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.emeraldDefault,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
           child: SizedBox(
@@ -93,8 +166,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 MediaQuery.of(context).padding.top,
             child: Column(
               children: [
-                Expanded(flex: 3, child: _buildLogoSection()),
-                Expanded(flex: 7, child: _buildFormCard()),
+                Expanded(flex: 2, child: _buildLogoSection()),
+                Expanded(flex: 5, child: _buildFormCard()),
               ],
             ),
           ),
@@ -166,12 +239,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   validator: Validators.password,
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
 
-                PrimaryButton(
-                  text: "Masuk",
-                  onPressed: _handleLogin,
-                  isLoading: _isLoading,
+                Consumer<FirebaseAuthProvider>(
+                  builder: (context, authProvider, child) {
+                    return PrimaryButton(
+                      text: "Masuk",
+                      onPressed: _handleLogin,
+                      isLoading:
+                          authProvider.authStatus ==
+                          FirebaseAuthStatus.authenticating,
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 20),
@@ -182,8 +261,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SecondaryButton.google(
                   text: "Masuk dengan Google",
-                  onPressed: _handleGoogleLogin,
-                  isLoading: _isLoading,
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Google Sign-In akan tersedia segera'),
+                        backgroundColor: AppColor.neutral40,
+                      ),
+                    );
+                  },
                 ),
 
                 const Spacer(),

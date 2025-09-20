@@ -8,6 +8,8 @@ abstract class Routes {
   static const String home = _Paths.home;
   static const String profile = _Paths.profile;
   static const String resultDetection = _Paths.resultDetection;
+  static const String editProfile = _Paths.editProfile;
+  static const String history = _Paths.history;
 }
 
 abstract class _Paths {
@@ -20,4 +22,6 @@ abstract class _Paths {
   static const home = '/home';
   static const profile = '/profile';
   static const resultDetection = '/result-detection';
+  static const editProfile = '/profile/edit-profile';
+  static const history = '/profile/history';
 }

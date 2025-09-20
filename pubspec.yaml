@@ -10,6 +10,8 @@ dependencies:
   animations: ^2.0.11
   camera: ^0.11.2
   firebase_core: ^4.1.0
+  firebase_auth: ^6.0.2
+  cloud_firestore: ^6.0.1
   flutter:
     sdk: flutter
   flutter_dotenv: ^6.0.0
@@ -20,6 +22,8 @@ dependencies:
   provider: ^6.1.5+1
   tflite_flutter: ^0.11.0
   shared_preferences: ^2.5.3
+  flutter_svg: ^2.2.1
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_lints: ^5.0.0

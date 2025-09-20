@@ -1,7 +1,9 @@
+import 'package:eco_coin/app/helper/firebase_auth_status.dart';
 import 'package:eco_coin/app/helper/shared/app_color.dart';
 import 'package:eco_coin/app/helper/shared/widget/shared_button.dart';
 import 'package:eco_coin/app/helper/shared/widget/shared_text_form_field.dart';
-import 'package:eco_coin/app/modules/splash/provider/shared_pref_provider.dart';
+import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
+import 'package:eco_coin/app/provider/shared_pref_provider.dart';
 import 'package:eco_coin/app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +22,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -35,37 +36,56 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final namaLengkap = _namaLengkapController.text.trim();
+    final namaPanggilan = _namaPanggilanController.text.trim();
 
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-
+    if (email.isNotEmpty &&
+        password.isNotEmpty &&
+        namaLengkap.isNotEmpty &&
+        namaPanggilan.isNotEmpty) {
       final sharedPrefProvider = context.read<SharedPrefProvider>();
-      await sharedPrefProvider.setHasLogin(true);
+      final firebaseAuthProvider = context.read<FirebaseAuthProvider>();
+      final navigator = Navigator.of(context);
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registrasi berhasil! Selamat datang di EcoCoin'),
-            backgroundColor: AppColor.emeraldDefault,
-          ),
-        );
+      firebaseAuthProvider.clearMessage();
 
-        Navigator.pushReplacementNamed(context, Routes.home);
+      await firebaseAuthProvider.createAccount(
+        email,
+        password,
+        namaLengkap,
+        namaPanggilan,
+      );
+
+      switch (firebaseAuthProvider.authStatus) {
+        case FirebaseAuthStatus.accountCreated:
+          await sharedPrefProvider.setHasLogin(true);
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(
+              content: Text('Registrasi berhasil! Selamat datang di EcoCoin'),
+              backgroundColor: AppColor.emeraldDefault,
+            ),
+          );
+          navigator.pushReplacementNamed(Routes.home);
+          break;
+        default:
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(firebaseAuthProvider.message ?? "Registrasi gagal"),
+              backgroundColor: AppColor.rubyDefault,
+            ),
+          );
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registrasi gagal. Silakan coba lagi.'),
-            backgroundColor: AppColor.rubyDefault,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+    } else {
+      const message = "Lengkapi semua field dengan benar";
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(message),
+          backgroundColor: AppColor.rubyDefault,
+        ),
+      );
     }
   }
 
@@ -77,7 +97,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Column(
           children: [
             _buildHeader(),
-
             Expanded(child: SingleChildScrollView(child: _buildFormCard())),
           ],
         ),
@@ -191,6 +210,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 12),
 
+                // Konfirmasi Password Field
                 PasswordFormField(
                   controller: _confirmPasswordController,
                   labelText: "Konfirmasi Password",
@@ -203,11 +223,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 32),
 
-                PrimaryButton(
-                  text: "Daftar Sekarang",
-                  onPressed: _handleRegister,
-                  isLoading: _isLoading,
+                // Register Button
+                Consumer<FirebaseAuthProvider>(
+                  builder: (context, authProvider, child) {
+                    return PrimaryButton(
+                      text: "Daftar Sekarang",
+                      onPressed: _handleRegister,
+                      isLoading:
+                          authProvider.authStatus ==
+                          FirebaseAuthStatus.creatingAccount,
+                    );
+                  },
                 ),
+
+                const SizedBox(height: 24),
+
+                // Login Link
+                _buildLoginLink(),
 
                 const SizedBox(height: 24),
               ],
@@ -240,6 +272,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildLoginLink() {
+    return Center(
+      child: TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: RichText(
+          text: TextSpan(
+            text: "Sudah punya akun? ",
+            style: AppColor.regular.copyWith(
+              color: AppColor.neutral40,
+              fontSize: 14,
+            ),
+            children: [
+              TextSpan(
+                text: "Masuk Sekarang",
+                style: AppColor.semibold.copyWith(
+                  color: AppColor.emeraldDefault,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
