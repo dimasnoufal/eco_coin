@@ -343,7 +343,7 @@ class _ResultDetectionState extends State<ResultDetection> {
                                                   ),
                                                   style: TextStyle(
                                                     color:
-                                                        AppColor.kPrimaryColor,
+                                                        AppColor.emeraldDefault,
                                                   ),
                                                 ),
                                               ],
