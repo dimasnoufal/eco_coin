@@ -2,10 +2,12 @@ import 'package:eco_coin/app/modules/home/provider/image_classification_provider
 import 'package:eco_coin/app/modules/home/ui/home_view.dart';
 import 'package:eco_coin/app/modules/login/login_screen.dart';
 import 'package:eco_coin/app/modules/onboarding/onboarding_screen.dart';
+import 'package:eco_coin/app/modules/profile/edit_profile/edit_profile_screen.dart';
+import 'package:eco_coin/app/modules/profile/history/history_screen.dart';
 import 'package:eco_coin/app/modules/profile/profile_screen.dart';
 import 'package:eco_coin/app/modules/register/register_screen.dart';
 import 'package:eco_coin/app/modules/result_detection/ui/result_detection.dart';
-import 'package:eco_coin/app/modules/splash/ui/splash_page.dart';
+import 'package:eco_coin/app/modules/splash/splash_screen.dart';
 import 'package:eco_coin/app/routes/app_routes.dart';
 import 'package:eco_coin/app/services/image_classification_services.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +29,9 @@ class AppPages {
       case Routes.profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case Routes.editProfile:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case Routes.history:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+        return MaterialPageRoute(builder: (_) => const HistoryScreen());
       case Routes.resultDetection:
         return MaterialPageRoute(
           settings: settings,

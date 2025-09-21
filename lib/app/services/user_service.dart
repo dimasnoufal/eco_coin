@@ -5,7 +5,6 @@ class UserService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String _collection = 'users';
 
-  // Create user document
   Future<void> createUser(UserModel user) async {
     try {
       await _firestore.collection(_collection).doc(user.uid).set(user.toJson());
@@ -14,7 +13,6 @@ class UserService {
     }
   }
 
-  // Get user by UID
   Future<UserModel?> getUser(String uid) async {
     try {
       final doc = await _firestore.collection(_collection).doc(uid).get();
@@ -28,7 +26,6 @@ class UserService {
     }
   }
 
-  // Update user
   Future<void> updateUser(UserModel user) async {
     try {
       await _firestore
@@ -37,27 +34,6 @@ class UserService {
           .update(user.copyWith(updatedAt: DateTime.now()).toJson());
     } catch (e) {
       throw Exception('Gagal update user: $e');
-    }
-  }
-
-  // Delete user document
-  Future<void> deleteUser(String uid) async {
-    try {
-      await _firestore.collection(_collection).doc(uid).delete();
-    } catch (e) {
-      throw Exception('Gagal hapus user: $e');
-    }
-  }
-
-  // Update profile image URL
-  Future<void> updateProfileImage(String uid, String imageUrl) async {
-    try {
-      await _firestore.collection(_collection).doc(uid).update({
-        'profileImageUrl': imageUrl,
-        'updatedAt': DateTime.now().toIso8601String(),
-      });
-    } catch (e) {
-      throw Exception('Gagal update profile image: $e');
     }
   }
 }

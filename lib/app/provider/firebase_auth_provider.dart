@@ -56,7 +56,6 @@ class FirebaseAuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Create account
   Future<void> createAccount(
     String email,
     String password,
@@ -153,34 +152,6 @@ class FirebaseAuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> uploadProfileImage(File imageFile) async {
-    if (_user == null) return false;
-
-    try {
-      if (_userModel?.profileImageUrl != null &&
-          _userModel!.profileImageUrl!.startsWith('/')) {
-        await _localStorageService.deleteImage(_userModel!.profileImageUrl!);
-      }
-
-      final localImagePath = await _localStorageService.saveProfileImage(
-        _user!.uid,
-        imageFile,
-      );
-
-      await _userService.updateProfileImage(_user!.uid, localImagePath);
-
-      if (_userModel != null) {
-        _userModel = _userModel!.copyWith(profileImageUrl: localImagePath);
-        notifyListeners();
-      }
-
-      return true;
-    } catch (e) {
-      _message = e.toString();
-      return false;
-    }
-  }
-
   Future<String?> uploadUserImage(File imageFile, String folder) async {
     if (_user == null) return null;
 
@@ -199,30 +170,6 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   File? getImageFile(String? imagePath) {
     return _localStorageService.getImageFile(imagePath);
-  }
-
-  Future<bool> deleteAccount() async {
-    if (_user == null) return false;
-
-    try {
-      final uid = _user!.uid;
-
-      await _localStorageService.clearUserData(uid);
-
-      await _userService.deleteUser(uid);
-
-      await _user!.delete();
-
-      _userModel = null;
-      _authStatus = FirebaseAuthStatus.unauthenticated;
-      _message = "Akun berhasil dihapus";
-
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _message = e.toString();
-      return false;
-    }
   }
 
   void clearMessage() {

@@ -149,8 +149,8 @@ class ProfileContainer extends StatelessWidget {
           child: Consumer<FirebaseAuthProvider>(
             builder: (context, authProvider, child) {
               final user = authProvider.userModel;
-              final firstLetter = (user?.namaLengkap?.isNotEmpty == true)
-                  ? user!.namaLengkap![0].toUpperCase()
+              final firstLetter = (user?.namaLengkap.isNotEmpty == true)
+                  ? user!.namaLengkap[0].toUpperCase()
                   : 'U';
 
               return Column(
@@ -179,9 +179,9 @@ class ProfileContainer extends StatelessWidget {
                             : Center(
                                 child: Text(
                                   firstLetter,
-                                  style: AppColor.bold.copyWith(
+                                  style: AppColor.blackTextStyle.copyWith(
                                     fontSize: 20,
-                                    color: AppColor.neutralBlack,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
@@ -200,9 +200,9 @@ class ProfileContainer extends StatelessWidget {
                             ),
                             Text(
                               user?.namaLengkap ?? 'User',
-                              style: AppColor.bold.copyWith(
+                              style: AppColor.whiteTextStyle.copyWith(
                                 fontSize: 18,
-                                color: AppColor.neutralWhite,
+                                fontWeight: FontWeight.w600,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -217,7 +217,7 @@ class ProfileContainer extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(24.0),
                     decoration: BoxDecoration(
-                      color: AppColor.neutral30,
+                      color: AppColor.emeraldBgLight,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: isLoading
@@ -242,8 +242,7 @@ class ProfileContainer extends StatelessWidget {
                                       'Total EcoCoins',
                                       style: AppColor.regular.copyWith(
                                         fontSize: 14,
-                                        color: AppColor.neutralWhite
-                                            .withOpacity(0.8),
+                                        color: AppColor.neutral40,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -259,7 +258,7 @@ class ProfileContainer extends StatelessWidget {
                                           totalEcoCoins.toString(),
                                           style: AppColor.bold.copyWith(
                                             fontSize: 24,
-                                            color: AppColor.neutralWhite,
+                                            color: AppColor.neutralBlack,
                                           ),
                                         ),
                                       ],
@@ -277,8 +276,7 @@ class ProfileContainer extends StatelessWidget {
                                       'Sampah Didaur Ulang',
                                       style: AppColor.regular.copyWith(
                                         fontSize: 14,
-                                        color: AppColor.neutralWhite
-                                            .withOpacity(0.8),
+                                        color: AppColor.neutral40,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -296,7 +294,7 @@ class ProfileContainer extends StatelessWidget {
                                           totalRecycledWaste.toString(),
                                           style: AppColor.bold.copyWith(
                                             fontSize: 24,
-                                            color: AppColor.neutralWhite,
+                                            color: AppColor.neutralBlack,
                                           ),
                                         ),
                                       ],
@@ -331,9 +329,9 @@ class FastActionContainer extends StatelessWidget {
           children: [
             Text(
               'Aksi Cepat',
-              style: AppColor.bold.copyWith(
+              style: AppColor.blackTextStyle.copyWith(
                 fontSize: 18,
-                color: AppColor.neutralBlack,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 24),
@@ -366,9 +364,9 @@ class FastActionContainer extends StatelessWidget {
                             const SizedBox(height: 8),
                             Text(
                               'Scan Sampah',
-                              style: AppColor.semibold.copyWith(
+                              style: AppColor.whiteTextStyle.copyWith(
                                 fontSize: 16,
-                                color: AppColor.neutralWhite,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
@@ -406,9 +404,10 @@ class FastActionContainer extends StatelessWidget {
                             const SizedBox(height: 8),
                             Text(
                               'Tukar Reward',
-                              style: AppColor.semibold.copyWith(
+                              style: TextStyle(
+                                color: AppColor.kPrimaryColor,
                                 fontSize: 16,
-                                color: AppColor.emeraldDefault,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
@@ -477,17 +476,17 @@ class RecycleCategoryContainer extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppColor.semibold.copyWith(
+                  style: AppColor.blackTextStyle.copyWith(
                     fontSize: 14,
-                    color: AppColor.neutralBlack,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '$itemCount Item',
-                  style: AppColor.regular.copyWith(
+                  style: AppColor.greyTextStyle.copyWith(
                     fontSize: 12,
-                    color: AppColor.neutral40,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -509,9 +508,9 @@ class RecycleCategoryContainer extends StatelessWidget {
           children: [
             Text(
               'Kategori Daur Ulang',
-              style: AppColor.bold.copyWith(
+              style: AppColor.blackTextStyle.copyWith(
                 fontSize: 18,
-                color: AppColor.neutralBlack,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 16),

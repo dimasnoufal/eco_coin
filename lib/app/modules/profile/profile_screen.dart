@@ -18,13 +18,11 @@ class ProfileScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Header Section
             _buildHeader(context),
-            // Content Section
             Expanded(
               child: Container(
                 width: double.infinity,
-                margin: const EdgeInsets.only(top: 20),
+                margin: const EdgeInsets.only(top: 4),
                 decoration: const BoxDecoration(
                   color: AppColor.neutralWhite,
                   borderRadius: BorderRadius.only(
@@ -51,7 +49,6 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              // Title
               Text(
                 "Profile Saya",
                 style: AppColor.bold.copyWith(
@@ -60,45 +57,43 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
-              // Profile Avatar
               LocalProfileAvatar(
                 imagePath: user?.profileImageUrl,
                 radius: 50,
                 onTap: () {
-                  // Navigate to edit profile
                   Navigator.pushNamed(context, Routes.editProfile);
                 },
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 4),
 
-              // User Name
               Text(
                 user?.namaLengkap ?? 'User',
-                style: AppColor.bold.copyWith(
-                  fontSize: 24,
-                  color: AppColor.neutralWhite,
+                style: AppColor.whiteTextStyle.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
 
               const SizedBox(height: 4),
 
-              // Email
               Text(
                 user?.email ?? '',
                 style: AppColor.regular.copyWith(
-                  fontSize: 16,
-                  color: AppColor.neutralWhite.withOpacity(0.8),
+                  fontSize: 14,
+                  color: AppColor.neutralWhite,
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
 
-              // Join Date
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppColor.neutralWhite.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(16),
@@ -107,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.calendar_today,
+                      Icons.calendar_today_outlined,
                       size: 16,
                       color: AppColor.neutralWhite.withOpacity(0.8),
                     ),
@@ -116,7 +111,7 @@ class ProfileScreen extends StatelessWidget {
                       "Bergabung ${_formatJoinDate(user?.createdAt)}",
                       style: AppColor.medium.copyWith(
                         fontSize: 14,
-                        color: AppColor.neutralWhite.withOpacity(0.8),
+                        color: AppColor.neutralBlack,
                       ),
                     ),
                   ],
@@ -131,13 +126,12 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildContent(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 12.0),
       child: Column(
         children: [
-          // Menu Items
           _buildMenuItem(
             context,
-            icon: Icons.edit,
+            imagePath: 'assets/images/ic_pencil_grey.png',
             title: "Edit Profile",
             subtitle: "Ubah informasi pribadi",
             onTap: () => Navigator.pushNamed(context, Routes.editProfile),
@@ -145,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
 
           _buildMenuItem(
             context,
-            icon: Icons.monetization_on,
+            imagePath: 'assets/images/ic_coins_grey.png',
             title: "Tukar Koin",
             subtitle: "Tukar EcoCoin dengan reward",
             onTap: () => CommonUtils.showComingSoonSnackBar(context),
@@ -153,7 +147,7 @@ class ProfileScreen extends StatelessWidget {
 
           _buildMenuItem(
             context,
-            icon: Icons.group,
+            imagePath: 'assets/images/ic_teams_grey.png',
             title: "Gabung dengan Komunitas",
             subtitle: "Bergabung dengan komunitas eco-friendly",
             onTap: () => CommonUtils.launchCommunityWebsite(context),
@@ -161,7 +155,7 @@ class ProfileScreen extends StatelessWidget {
 
           _buildMenuItem(
             context,
-            icon: Icons.history,
+            imagePath: 'assets/images/ic_history_grey.png',
             title: "History",
             subtitle: "Lihat riwayat aktivitas sebelumnya",
             onTap: () => Navigator.pushNamed(context, Routes.history),
@@ -191,13 +185,13 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildMenuItem(
-      BuildContext context, {
-        required IconData icon,
-        required String title,
-        required String subtitle,
-        required VoidCallback onTap,
-        bool showDivider = true,
-      }) {
+    BuildContext context, {
+    required String imagePath,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    bool showDivider = true,
+  }) {
     return Column(
       children: [
         InkWell(
@@ -207,7 +201,6 @@ class ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Row(
               children: [
-                // Icon
                 Container(
                   width: 48,
                   height: 48,
@@ -215,16 +208,12 @@ class ProfileScreen extends StatelessWidget {
                     color: AppColor.neutral10,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    icon,
-                    color: AppColor.neutral40,
-                    size: 24,
-                  ),
+
+                  child: Image.asset(imagePath, width: 24, height: 24),
                 ),
 
                 const SizedBox(width: 16),
 
-                // Text
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,23 +237,14 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Arrow
-                Icon(
-                  Icons.chevron_right,
-                  color: AppColor.neutral40,
-                  size: 24,
-                ),
+                Icon(Icons.chevron_right, color: AppColor.neutral40, size: 24),
               ],
             ),
           ),
         ),
 
         if (showDivider)
-          Divider(
-            height: 1,
-            color: AppColor.neutral20,
-            indent: 64,
-          ),
+          Divider(height: 1, color: AppColor.neutral20, indent: 64),
       ],
     );
   }
@@ -285,11 +265,7 @@ class ProfileScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.logout,
-                  color: AppColor.rubyDefault,
-                  size: 20,
-                ),
+                Icon(Icons.logout, color: AppColor.rubyDefault, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   authProvider.authStatus == FirebaseAuthStatus.signingOut
@@ -309,11 +285,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Future<void> _handleLogout(
-      BuildContext context,
-      FirebaseAuthProvider authProvider,
-      SharedPrefProvider sharedPrefProvider,
-      ) async {
-    // Show confirmation dialog
+    BuildContext context,
+    FirebaseAuthProvider authProvider,
+    SharedPrefProvider sharedPrefProvider,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -326,9 +301,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColor.rubyDefault,
-            ),
+            style: TextButton.styleFrom(foregroundColor: AppColor.rubyDefault),
             child: const Text('Keluar'),
           ),
         ],
@@ -336,30 +309,16 @@ class ProfileScreen extends StatelessWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      try {
-        // Clear login preference first
-        await sharedPrefProvider.setHasLogin(false);
+      await sharedPrefProvider.setHasLogin(false);
 
-        // Sign out from Firebase
-        await authProvider.signOutUser();
+      await authProvider.signOutUser();
 
-        // Navigate to login screen and clear all routes
-        if (context.mounted) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            Routes.login,
-                (route) => false,
-          );
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Gagal keluar: ${e.toString()}'),
-              backgroundColor: AppColor.rubyDefault,
-            ),
-          );
-        }
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.login,
+          (route) => false,
+        );
       }
     }
   }
@@ -368,15 +327,24 @@ class ProfileScreen extends StatelessWidget {
     if (date == null) return 'Tanggal tidak diketahui';
 
     final months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
 
     return '${months[date.month - 1]} ${date.year}';
   }
 }
 
-// Profile Avatar Widget that shows first letter of name if no image
 class LocalProfileAvatar extends StatelessWidget {
   final String? imagePath;
   final double radius;
@@ -405,20 +373,20 @@ class LocalProfileAvatar extends StatelessWidget {
             backgroundColor: AppColor.neutral20,
             child: imagePath != null && imagePath!.isNotEmpty
                 ? ClipOval(
-              child: LocalImageWidget(
-                imagePath: imagePath,
-                width: radius * 2,
-                height: radius * 2,
-                fit: BoxFit.cover,
-              ),
-            )
+                    child: LocalImageWidget(
+                      imagePath: imagePath,
+                      width: radius * 2,
+                      height: radius * 2,
+                      fit: BoxFit.cover,
+                    ),
+                  )
                 : Text(
-              firstLetter,
-              style: AppColor.bold.copyWith(
-                fontSize: radius * 0.6,
-                color: AppColor.neutralBlack,
-              ),
-            ),
+                    firstLetter,
+                    style: AppColor.bold.copyWith(
+                      fontSize: radius * 0.6,
+                      color: AppColor.neutralBlack,
+                    ),
+                  ),
           );
         },
       ),

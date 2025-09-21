@@ -6,10 +6,12 @@ class WasteDetectionService {
   final String _detectionCollection = 'waste_detections';
   final String _userStatsCollection = 'user_waste_stats';
 
-  // Get user waste stats for dashboard
   Future<UserWasteStats> getUserWasteStats(String userId) async {
     try {
-      final doc = await _firestore.collection(_userStatsCollection).doc(userId).get();
+      final doc = await _firestore
+          .collection(_userStatsCollection)
+          .doc(userId)
+          .get();
 
       if (doc.exists && doc.data() != null) {
         return UserWasteStats.fromJson(doc.data()!);
@@ -21,8 +23,10 @@ class WasteDetectionService {
     }
   }
 
-  // Get user's waste detection history
-  Future<List<WasteDetectionModel>> getUserWasteHistory(String userId, {int? limit}) async {
+  Future<List<WasteDetectionModel>> getUserWasteHistory(
+    String userId, {
+    int? limit,
+  }) async {
     try {
       Query query = _firestore
           .collection(_detectionCollection)
@@ -36,15 +40,21 @@ class WasteDetectionService {
       final snapshot = await query.get();
 
       return snapshot.docs
-          .map((doc) => WasteDetectionModel.fromJson(doc.data() as Map<String, dynamic>))
+          .map(
+            (doc) => WasteDetectionModel.fromJson(
+              doc.data() as Map<String, dynamic>,
+            ),
+          )
           .toList();
     } catch (e) {
       throw Exception('Gagal mengambil riwayat deteksi: $e');
     }
   }
 
-  // Get waste detections by category
-  Future<List<WasteDetectionModel>> getUserWasteByCategory(String userId, String category) async {
+  Future<List<WasteDetectionModel>> getUserWasteByCategory(
+    String userId,
+    String category,
+  ) async {
     try {
       final snapshot = await _firestore
           .collection(_detectionCollection)
@@ -54,20 +64,22 @@ class WasteDetectionService {
           .get();
 
       return snapshot.docs
-          .map((doc) => WasteDetectionModel.fromJson(doc.data() as Map<String, dynamic>))
+          .map(
+            (doc) => WasteDetectionModel.fromJson(
+              doc.data() as Map<String, dynamic>,
+            ),
+          )
           .toList();
     } catch (e) {
       throw Exception('Gagal mengambil data sampah berdasarkan kategori: $e');
     }
   }
 
-  // Get total waste count by category for a user
   Future<Map<String, int>> getCategoryCountStats(String userId) async {
     try {
       final stats = await getUserWasteStats(userId);
       return stats.categoryCount;
     } catch (e) {
-      // Fallback: calculate from individual detection records
       try {
         final detections = await getUserWasteHistory(userId);
         final Map<String, int> categoryCount = {
@@ -79,7 +91,8 @@ class WasteDetectionService {
         };
 
         for (final detection in detections) {
-          categoryCount[detection.category] = (categoryCount[detection.category] ?? 0) + 1;
+          categoryCount[detection.category] =
+              (categoryCount[detection.category] ?? 0) + 1;
         }
 
         return categoryCount;
@@ -89,8 +102,10 @@ class WasteDetectionService {
     }
   }
 
-  // Get recent detections for dashboard
-  Future<List<WasteDetectionModel>> getRecentDetections(String userId, {int limit = 5}) async {
+  Future<List<WasteDetectionModel>> getRecentDetections(
+    String userId, {
+    int limit = 5,
+  }) async {
     try {
       return await getUserWasteHistory(userId, limit: limit);
     } catch (e) {
@@ -98,7 +113,6 @@ class WasteDetectionService {
     }
   }
 
-  // Check if user has any waste detection data
   Future<bool> hasWasteData(String userId) async {
     try {
       final snapshot = await _firestore
@@ -113,22 +127,23 @@ class WasteDetectionService {
     }
   }
 
-  // Stream user stats for real-time updates
   Stream<UserWasteStats> getUserWasteStatsStream(String userId) {
     return _firestore
         .collection(_userStatsCollection)
         .doc(userId)
         .snapshots()
         .map((doc) {
-      if (doc.exists && doc.data() != null) {
-        return UserWasteStats.fromJson(doc.data()!);
-      }
-      return UserWasteStats.empty();
-    });
+          if (doc.exists && doc.data() != null) {
+            return UserWasteStats.fromJson(doc.data()!);
+          }
+          return UserWasteStats.empty();
+        });
   }
 
-  // Stream user detection history for real-time updates
-  Stream<List<WasteDetectionModel>> getUserWasteHistoryStream(String userId, {int? limit}) {
+  Stream<List<WasteDetectionModel>> getUserWasteHistoryStream(
+    String userId, {
+    int? limit,
+  }) {
     Query query = _firestore
         .collection(_detectionCollection)
         .where('userId', isEqualTo: userId)
@@ -140,7 +155,11 @@ class WasteDetectionService {
 
     return query.snapshots().map((snapshot) {
       return snapshot.docs
-          .map((doc) => WasteDetectionModel.fromJson(doc.data() as Map<String, dynamic>))
+          .map(
+            (doc) => WasteDetectionModel.fromJson(
+              doc.data() as Map<String, dynamic>,
+            ),
+          )
           .toList();
     });
   }
