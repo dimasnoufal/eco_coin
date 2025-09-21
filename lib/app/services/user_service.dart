@@ -36,4 +36,38 @@ class UserService {
       throw Exception('Gagal update user: $e');
     }
   }
+
+  Future<bool> userExistsByEmail(String email) async {
+    try {
+      final query = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      return query.docs.isNotEmpty;
+    } catch (e) {
+      print("Error checking user exists by email: $e");
+      return false;
+    }
+  }
+
+  Future<UserModel?> getUserByEmail(String email) async {
+    try {
+      final query = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (query.docs.isNotEmpty) {
+        final data = query.docs.first.data();
+        return UserModel.fromJson(data);
+      }
+      return null;
+    } catch (e) {
+      print("Error getting user by email: $e");
+      return null;
+    }
+  }
 }

@@ -86,71 +86,31 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _showForgotPasswordDialog() {
-    final emailController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
+  Future<void> _handleGoogleSignIn() async {
+    final sharedPrefProvider = context.read<SharedPrefProvider>();
+    final firebaseAuthProvider = context.read<FirebaseAuthProvider>();
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Reset Password'),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Masukkan email untuk reset password:'),
-              const SizedBox(height: 16),
-              CustomTextFormField(
-                controller: emailController,
-                hintText: 'Email',
-                keyboardType: TextInputType.emailAddress,
-                validator: Validators.email,
-              ),
-            ],
+    firebaseAuthProvider.clearMessage();
+
+    await firebaseAuthProvider.signInWithGoogle();
+
+    switch (firebaseAuthProvider.authStatus) {
+      case FirebaseAuthStatus.authenticated:
+        await sharedPrefProvider.setHasLogin(true);
+        navigator.pushReplacementNamed(Routes.home);
+        break;
+      default:
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              firebaseAuthProvider.message ?? "Google Sign-In gagal",
+            ),
+            backgroundColor: AppColor.rubyDefault,
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate() &&
-                  emailController.text.isNotEmpty) {
-                final firebaseAuthProvider = context
-                    .read<FirebaseAuthProvider>();
-
-                firebaseAuthProvider.clearMessage();
-
-                await firebaseAuthProvider.sendPasswordReset(
-                  emailController.text.trim(),
-                );
-
-                if (mounted) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        firebaseAuthProvider.message ??
-                            "Email reset password telah dikirim",
-                      ),
-                      backgroundColor:
-                          firebaseAuthProvider.message?.contains('gagal') ==
-                              true
-                          ? AppColor.rubyDefault
-                          : AppColor.emeraldDefault,
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Text('Kirim'),
-          ),
-        ],
-      ),
-    );
+        );
+    }
   }
 
   @override
@@ -259,14 +219,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 20),
 
-                SecondaryButton.google(
-                  text: "Masuk dengan Google",
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Google Sign-In akan tersedia segera'),
-                        backgroundColor: AppColor.neutral40,
-                      ),
+                Consumer<FirebaseAuthProvider>(
+                  builder: (context, authProvider, child) {
+                    return SecondaryButton.google(
+                      text: "Masuk dengan Google",
+                      onPressed: _handleGoogleSignIn,
+                      isLoading:
+                          authProvider.authStatus ==
+                          FirebaseAuthStatus.authenticating,
                     );
                   },
                 ),

@@ -1,7 +1,6 @@
 import 'package:eco_coin/app/helper/firebase_auth_status.dart';
 import 'package:eco_coin/app/helper/shared/app_color.dart';
 import 'package:eco_coin/app/helper/shared/common_utils.dart';
-import 'package:eco_coin/app/helper/shared/widget/local_image.dart';
 import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
 import 'package:eco_coin/app/provider/shared_pref_provider.dart';
 import 'package:eco_coin/app/routes/app_routes.dart';
@@ -60,7 +59,6 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               LocalProfileAvatar(
-                imagePath: user?.profileImageUrl,
                 radius: 50,
                 onTap: () {
                   Navigator.pushNamed(context, Routes.editProfile);
@@ -346,16 +344,10 @@ class ProfileScreen extends StatelessWidget {
 }
 
 class LocalProfileAvatar extends StatelessWidget {
-  final String? imagePath;
   final double radius;
   final VoidCallback? onTap;
 
-  const LocalProfileAvatar({
-    super.key,
-    required this.imagePath,
-    this.radius = 50,
-    this.onTap,
-  });
+  const LocalProfileAvatar({super.key, this.radius = 50, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -371,22 +363,13 @@ class LocalProfileAvatar extends StatelessWidget {
           return CircleAvatar(
             radius: radius,
             backgroundColor: AppColor.neutral20,
-            child: imagePath != null && imagePath!.isNotEmpty
-                ? ClipOval(
-                    child: LocalImageWidget(
-                      imagePath: imagePath,
-                      width: radius * 2,
-                      height: radius * 2,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : Text(
-                    firstLetter,
-                    style: AppColor.bold.copyWith(
-                      fontSize: radius * 0.6,
-                      color: AppColor.neutralBlack,
-                    ),
-                  ),
+            child: Text(
+              firstLetter,
+              style: AppColor.bold.copyWith(
+                fontSize: radius * 0.6,
+                color: AppColor.neutralBlack,
+              ),
+            ),
           );
         },
       ),

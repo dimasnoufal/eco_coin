@@ -7,11 +7,13 @@ import 'package:eco_coin/app/services/local_storage_services.dart';
 import 'package:eco_coin/app/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthProvider extends ChangeNotifier {
   final FirebaseAuthService _authService;
   final UserService _userService;
   final LocalStorageService _localStorageService;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 
   FirebaseAuthProvider(
     this._authService,
@@ -34,7 +36,6 @@ class FirebaseAuthProvider extends ChangeNotifier {
   UserModel? _userModel;
   FirebaseAuthStatus _authStatus = FirebaseAuthStatus.unauthenticated;
 
-  // Getters
   String? get message => _message;
 
   User? get user => _user;
@@ -105,12 +106,103 @@ class FirebaseAuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> sendPasswordReset(String email) async {
+  Future<void> signInWithGoogle() async {
     try {
-      await _authService.sendPasswordResetEmail(email);
-      _message = "Email reset password telah dikirim";
+      _authStatus = FirebaseAuthStatus.authenticating;
+      notifyListeners();
+
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        _authStatus = FirebaseAuthStatus.unauthenticated;
+        _message = "Sign in dibatalkan";
+        notifyListeners();
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithCredential(credential);
+
+      if (userCredential.user == null) {
+        _authStatus = FirebaseAuthStatus.error;
+        _message = "Gagal masuk dengan Google";
+        notifyListeners();
+        return;
+      }
+
+      final firebaseUser = userCredential.user!;
+      final email = firebaseUser.email;
+
+      if (email == null) {
+        _authStatus = FirebaseAuthStatus.error;
+        _message = "Email tidak ditemukan dari akun Google";
+        notifyListeners();
+        return;
+      }
+
+      final exists = await _userService.userExistsByEmail(email);
+
+      if (exists) {
+        final existingUser = await _userService.getUserByEmail(email);
+        if (existingUser != null) {
+          _userModel = existingUser;
+          _message = "Selamat datang kembali, ${existingUser.namaPanggilan}!";
+        } else {
+          _authStatus = FirebaseAuthStatus.error;
+          _message = "Terjadi kesalahan saat mengambil data user";
+          notifyListeners();
+          return;
+        }
+      } else {
+        final displayName = firebaseUser.displayName ?? 'User';
+        final nameParts = displayName.split(' ');
+        final now = DateTime.now();
+
+        final newUser = UserModel(
+          uid: firebaseUser.uid,
+          email: email,
+          namaLengkap: displayName,
+          namaPanggilan: nameParts.isNotEmpty ? nameParts.first : 'User',
+          phoneNumber: firebaseUser.phoneNumber,
+          address: null,
+          bio: null,
+          createdAt: now,
+          updatedAt: now,
+        );
+
+        await _userService.createUser(newUser);
+        _userModel = newUser;
+        _message = "Selamat datang di EcoCoin, ${newUser.namaPanggilan}!";
+      }
+
+      _authStatus = FirebaseAuthStatus.authenticated;
+    } on FirebaseAuthException catch (e) {
+      _authStatus = FirebaseAuthStatus.error;
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          _message =
+              "Email sudah terdaftar dengan metode sign-in lain. Coba login dengan email/password";
+          break;
+        case 'invalid-credential':
+          _message = "Credential Google tidak valid";
+          break;
+        case 'operation-not-allowed':
+          _message = "Google Sign-In tidak diaktifkan";
+          break;
+        case 'user-disabled':
+          _message = "Akun pengguna telah dinonaktifkan";
+          break;
+        default:
+          _message = "Terjadi kesalahan: ${e.message}";
+      }
     } catch (e) {
-      _message = e.toString();
+      _authStatus = FirebaseAuthStatus.error;
+      _message = "Terjadi kesalahan: $e";
     }
     notifyListeners();
   }
@@ -119,6 +211,8 @@ class FirebaseAuthProvider extends ChangeNotifier {
     try {
       _authStatus = FirebaseAuthStatus.signingOut;
       notifyListeners();
+
+      await _googleSignIn.signOut();
 
       await _authService.signOut();
       _userModel = null;

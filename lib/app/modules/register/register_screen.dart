@@ -210,7 +210,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 12),
 
-                // Konfirmasi Password Field
                 PasswordFormField(
                   controller: _confirmPasswordController,
                   labelText: "Konfirmasi Password",
@@ -223,7 +222,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 32),
 
-                // Register Button
                 Consumer<FirebaseAuthProvider>(
                   builder: (context, authProvider, child) {
                     return PrimaryButton(
@@ -238,7 +236,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 24),
 
-                // Login Link
                 _buildLoginLink(),
 
                 const SizedBox(height: 24),

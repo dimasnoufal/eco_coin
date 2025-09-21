@@ -3,7 +3,6 @@ class UserModel {
   final String email;
   final String namaLengkap;
   final String namaPanggilan;
-  final String? profileImageUrl;
   final String? phoneNumber;
   final String? address;
   final String? bio;
@@ -15,7 +14,6 @@ class UserModel {
     required this.email,
     required this.namaLengkap,
     required this.namaPanggilan,
-    this.profileImageUrl,
     this.phoneNumber,
     this.address,
     this.bio,
@@ -29,7 +27,6 @@ class UserModel {
       email: json['email'] ?? '',
       namaLengkap: json['namaLengkap'] ?? '',
       namaPanggilan: json['namaPanggilan'] ?? '',
-      profileImageUrl: json['profileImageUrl'],
       phoneNumber: json['phoneNumber'],
       address: json['address'],
       bio: json['bio'],
@@ -44,7 +41,6 @@ class UserModel {
       'email': email,
       'namaLengkap': namaLengkap,
       'namaPanggilan': namaPanggilan,
-      'profileImageUrl': profileImageUrl,
       'phoneNumber': phoneNumber,
       'address': address,
       'bio': bio,
@@ -58,7 +54,6 @@ class UserModel {
     String? email,
     String? namaLengkap,
     String? namaPanggilan,
-    String? profileImageUrl,
     String? phoneNumber,
     String? address,
     String? bio,
@@ -70,7 +65,6 @@ class UserModel {
       email: email ?? this.email,
       namaLengkap: namaLengkap ?? this.namaLengkap,
       namaPanggilan: namaPanggilan ?? this.namaPanggilan,
-      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       address: address ?? this.address,
       bio: bio ?? this.bio,

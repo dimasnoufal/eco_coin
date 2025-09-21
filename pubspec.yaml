@@ -11,6 +11,7 @@ dependencies:
   camera: ^0.11.2
   firebase_core: ^4.1.0
   firebase_auth: ^6.0.2
+  google_sign_in: ^6.2.1
   cloud_firestore: ^6.0.1
   flutter:
     sdk: flutter

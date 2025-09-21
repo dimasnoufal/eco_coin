@@ -1,6 +1,5 @@
 import 'package:eco_coin/app/helper/shared/app_color.dart';
 import 'package:eco_coin/app/helper/shared/common_utils.dart';
-import 'package:eco_coin/app/helper/shared/widget/local_image.dart';
 import 'package:eco_coin/app/modules/home/provider/home_provider.dart';
 import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
 import 'package:eco_coin/app/services/waste_detection_service.dart';
@@ -165,26 +164,15 @@ class ProfileContainer extends StatelessWidget {
                           color: AppColor.neutralWhite.withOpacity(0.9),
                           shape: BoxShape.circle,
                         ),
-                        child:
-                            user?.profileImageUrl != null &&
-                                user!.profileImageUrl!.isNotEmpty
-                            ? ClipOval(
-                                child: LocalImageWidget(
-                                  imagePath: user.profileImageUrl,
-                                  width: 48,
-                                  height: 48,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : Center(
-                                child: Text(
-                                  firstLetter,
-                                  style: AppColor.blackTextStyle.copyWith(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
+                        child: Center(
+                          child: Text(
+                            firstLetter,
+                            style: AppColor.blackTextStyle.copyWith(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
