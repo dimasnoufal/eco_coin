@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:eco_coin/app/data/local/local_database.dart';
 import 'package:eco_coin/app/helper/shared/app_color.dart';
 import 'package:eco_coin/app/helper/shared/logger.dart';
 import 'package:eco_coin/app/modules/home/provider/home_provider.dart';
 import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
+import 'package:eco_coin/app/provider/local_database_provider.dart';
 import 'package:eco_coin/app/provider/shared_pref_provider.dart';
 import 'package:eco_coin/app/routes/app_pages.dart';
 import 'package:eco_coin/app/services/firebase_auth_service.dart';
@@ -43,6 +45,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        Provider(create: (_) => LocalDatabase()),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
         ChangeNotifierProvider(
           create: (_) => SharedPrefProvider(sharedPreferencesService),
@@ -55,6 +58,11 @@ void main() async {
           ),
         ),
         Provider.value(value: wasteDetectionService),
+        ChangeNotifierProvider(
+          create: (context) {
+            return LocalDatabaseProvider(context.read<LocalDatabase>());
+          },
+        ),
       ],
       child: const MainApp(),
     ),

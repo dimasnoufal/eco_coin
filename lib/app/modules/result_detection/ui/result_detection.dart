@@ -1,7 +1,12 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:eco_coin/app/data/models/recycling_item.dart';
 import 'package:eco_coin/app/helper/shared/app_color.dart';
+import 'package:eco_coin/app/helper/shared/dialogs.dart';
 import 'package:eco_coin/app/helper/shared/logger.dart';
+import 'package:eco_coin/app/modules/home/provider/home_provider.dart';
 import 'package:eco_coin/app/modules/home/provider/image_classification_provider.dart';
+import 'package:eco_coin/app/provider/local_database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +22,7 @@ class ResultDetection extends StatefulWidget {
 class _ResultDetectionState extends State<ResultDetection> {
   // Initialize variable
   String? _imagePath;
+  String? strDate;
 
   @override
   void initState() {
@@ -57,7 +63,10 @@ class _ResultDetectionState extends State<ResultDetection> {
                   color: AppColor.kWhite,
                   shape: const CircleBorder(),
                   child: InkWell(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.read<HomeProvider>().currentIndex = 0;
+                    },
                     borderRadius: BorderRadius.circular(50),
                     child: const Icon(
                       Icons.arrow_back_ios_new,
@@ -101,7 +110,10 @@ class _ResultDetectionState extends State<ResultDetection> {
                 color: AppColor.kWhite,
                 shape: const CircleBorder(),
                 child: InkWell(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.read<HomeProvider>().currentIndex = 0;
+                  },
                   borderRadius: BorderRadius.circular(50),
                   child: const Icon(
                     Icons.arrow_back_ios_new,
@@ -401,7 +413,53 @@ class _ResultDetectionState extends State<ResultDetection> {
                         const Spacer(),
 
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            strDate = _formatNow();
+                            if (_imagePath != null) {
+                              Uint8List imageBytes = await imagePathToUint8List(
+                                _imagePath!,
+                              );
+                              context
+                                  .read<LocalDatabaseProvider>()
+                                  .doWasteRecycling(
+                                    RecyclingItem(
+                                      categoryName: provider
+                                          .classifications
+                                          .entries
+                                          .first
+                                          .key,
+                                      confidence: confidencePercentage,
+                                      image: imageBytes,
+                                      date: strDate!,
+                                    ),
+                                  );
+
+                              if (context
+                                  .read<LocalDatabaseProvider>()
+                                  .status) {
+                                await Dialogs.showSuccessDialog(
+                                  context: context,
+                                  category: provider
+                                      .classifications
+                                      .entries
+                                      .first
+                                      .key
+                                      .toString(),
+                                  ecoCoins: _rewardFromLabel(
+                                    provider.classifications.entries.first.key,
+                                  ),
+                                  onBackToHome: () {
+                                    Navigator.popUntil(
+                                      context,
+                                      (route) => route.isFirst,
+                                    );
+                                    context.read<HomeProvider>().currentIndex =
+                                        0;
+                                  },
+                                );
+                              }
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColor.emeraldDefault,
                             minimumSize: const Size.fromHeight(48),
@@ -478,11 +536,16 @@ class _ResultDetectionState extends State<ResultDetection> {
       case 'Sampah Residu':
         return '+30';
       case 'Sampah Anorganik':
-        return '+20';
+        return '+15';
       case 'Sampah Organik':
-        return '+10';
+        return '+5';
       default:
         return '+5';
     }
+  }
+
+  Future<Uint8List> imagePathToUint8List(String imagePath) async {
+    final file = File(imagePath);
+    return await file.readAsBytes();
   }
 }
