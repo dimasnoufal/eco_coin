@@ -3,7 +3,7 @@ import 'package:eco_coin/app/helper/shared/common_utils.dart';
 import 'package:eco_coin/app/modules/home/provider/home_provider.dart';
 import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
 import 'package:eco_coin/app/provider/local_database_provider.dart';
-import 'package:eco_coin/app/services/waste_detection_service.dart';
+// import 'package:eco_coin/app/services/waste_detection_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,18 +15,18 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final WasteDetectionService _wasteDetectionService = WasteDetectionService();
+  // final WasteDetectionService _wasteDetectionService = WasteDetectionService();
 
-  Map<String, int> _categoryStats = {
-    'organik': 0,
-    'anorganik': 0,
-    'residu': 0,
-    'b3': 0,
-    'elektronik': 0,
-  };
+  // Map<String, int> _categoryStats = {
+  //   'organik': 0,
+  //   'anorganik': 0,
+  //   'residu': 0,
+  //   'b3': 0,
+  //   'elektronik': 0,
+  // };
 
-  int _totalEcoCoins = 0;
-  int _totalRecycledWaste = 0;
+  // int _totalEcoCoins = 0;
+  // int _totalRecycledWaste = 0;
   bool _isLoading = false;
 
   @override
@@ -42,7 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (authProvider.user != null) {
       await authProvider.updateProfile();
 
-      await _loadWasteStats(authProvider.user!.uid);
+      // await _loadWasteStats(authProvider.user!.uid);
     }
 
     setState(() => _isLoading = false);
@@ -50,58 +50,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
     context.read<LocalDatabaseProvider>().loadAllWasteRecycling();
   }
 
-  Future<void> _loadWasteStats(String userId) async {
-    try {
-      final stats = await _wasteDetectionService.getUserWasteStats(userId);
+  // Future<void> _loadWasteStats(String userId) async {
+  //   try {
+  //     final stats = await _wasteDetectionService.getUserWasteStats(userId);
 
-      if (mounted) {
-        setState(() {
-          _totalEcoCoins = stats.totalEcoCoins;
-          _totalRecycledWaste = stats.totalRecycledWaste;
-          _categoryStats = stats.categoryCount;
-        });
-      }
-    } catch (e) {
-      try {
-        final categoryCount = await _wasteDetectionService
-            .getCategoryCountStats(userId);
-        final hasData = await _wasteDetectionService.hasWasteData(userId);
+  //     if (mounted) {
+  //       setState(() {
+  //         _totalEcoCoins = stats.totalEcoCoins;
+  //         _totalRecycledWaste = stats.totalRecycledWaste;
+  //         _categoryStats = stats.categoryCount;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     try {
+  //       final categoryCount = await _wasteDetectionService
+  //           .getCategoryCountStats(userId);
+  //       final hasData = await _wasteDetectionService.hasWasteData(userId);
 
-        if (mounted) {
-          setState(() {
-            _totalEcoCoins = 0;
-            _totalRecycledWaste = hasData
-                ? categoryCount.values.fold(0, (a, b) => a + b)
-                : 0;
-            _categoryStats = categoryCount;
-          });
-        }
-      } catch (fallbackError) {
-        if (mounted) {
-          setState(() {
-            _totalEcoCoins = 0;
-            _totalRecycledWaste = 0;
-            _categoryStats = {
-              'organik': 0,
-              'anorganik': 0,
-              'residu': 0,
-              'b3': 0,
-              'elektronik': 0,
-            };
-          });
+  //       if (mounted) {
+  //         setState(() {
+  //           _totalEcoCoins = 0;
+  //           _totalRecycledWaste = hasData
+  //               ? categoryCount.values.fold(0, (a, b) => a + b)
+  //               : 0;
+  //           _categoryStats = categoryCount;
+  //         });
+  //       }
+  //     } catch (fallbackError) {
+  //       if (mounted) {
+  //         setState(() {
+  //           _totalEcoCoins = 0;
+  //           _totalRecycledWaste = 0;
+  //           _categoryStats = {
+  //             'organik': 0,
+  //             'anorganik': 0,
+  //             'residu': 0,
+  //             'b3': 0,
+  //             'elektronik': 0,
+  //           };
+  //         });
 
-          if (!fallbackError.toString().contains('tidak ditemukan')) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Gagal memuat data: $fallbackError'),
-                backgroundColor: AppColor.rubyDefault,
-              ),
-            );
-          }
-        }
-      }
-    }
-  }
+  //         if (!fallbackError.toString().contains('tidak ditemukan')) {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //               content: Text('Gagal memuat data: $fallbackError'),
+  //               backgroundColor: AppColor.rubyDefault,
+  //             ),
+  //           );
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -112,13 +112,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
-              ProfileContainer(
-                totalEcoCoins: _totalEcoCoins,
-                totalRecycledWaste: _totalRecycledWaste,
-                isLoading: _isLoading,
-              ),
+              ProfileContainer(isLoading: _isLoading),
               const FastActionContainer(),
-              RecycleCategoryContainer(categoryStats: _categoryStats),
+              RecycleCategoryContainer(),
               const SizedBox(height: 100),
             ],
           ),
@@ -129,16 +125,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 }
 
 class ProfileContainer extends StatelessWidget {
-  final int totalEcoCoins;
-  final int totalRecycledWaste;
   final bool isLoading;
 
-  const ProfileContainer({
-    super.key,
-    required this.totalEcoCoins,
-    required this.totalRecycledWaste,
-    required this.isLoading,
-  });
+  const ProfileContainer({super.key, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
@@ -423,9 +412,7 @@ class FastActionContainer extends StatelessWidget {
 }
 
 class RecycleCategoryContainer extends StatelessWidget {
-  final Map<String, int> categoryStats;
-
-  const RecycleCategoryContainer({super.key, required this.categoryStats});
+  const RecycleCategoryContainer({super.key});
 
   Widget _recycleCategoryItem({
     required String imagePath,
@@ -511,66 +498,50 @@ class RecycleCategoryContainer extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            GridView.count(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 2.5,
-              children: [
-                _recycleCategoryItem(
-                  imagePath: 'assets/images/ic_organic.png',
-                  backgroundColor: Colors.green.withOpacity(0.1),
-                  title: 'Organik',
-                  itemCount:
-                      context
-                          .read<LocalDatabaseProvider>()
-                          .categoryStats['Sampah Organik'] ??
-                      0,
-                ),
-                _recycleCategoryItem(
-                  imagePath: 'assets/images/ic_recycler_green.png',
-                  backgroundColor: Colors.blue.withOpacity(0.1),
-                  title: 'Anorganik',
-                  itemCount:
-                      context
-                          .read<LocalDatabaseProvider>()
-                          .categoryStats['Sampah Anorganik'] ??
-                      0,
-                ),
-                _recycleCategoryItem(
-                  imagePath: 'assets/images/ic_residu.png',
-                  backgroundColor: Colors.brown.withOpacity(0.1),
-                  title: 'Residu',
-                  itemCount:
-                      context
-                          .read<LocalDatabaseProvider>()
-                          .categoryStats['Sampah Residu'] ??
-                      0,
-                ),
-                _recycleCategoryItem(
-                  imagePath: 'assets/images/ic_hazard.png',
-                  backgroundColor: Colors.orange.withOpacity(0.1),
-                  title: 'B3',
-                  itemCount:
-                      context
-                          .read<LocalDatabaseProvider>()
-                          .categoryStats['Sampah B3'] ??
-                      0,
-                ),
-                _recycleCategoryItem(
-                  imagePath: 'assets/images/ic_electronic.png',
-                  backgroundColor: Colors.purple.withOpacity(0.1),
-                  title: 'Elektronik',
-                  itemCount:
-                      context
-                          .read<LocalDatabaseProvider>()
-                          .categoryStats['Sampah Elektronik'] ??
-                      0,
-                ),
-              ],
+            Consumer<LocalDatabaseProvider>(
+              builder: (context, value, child) {
+                return GridView.count(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 2.5,
+                  children: [
+                    _recycleCategoryItem(
+                      imagePath: 'assets/images/ic_organic.png',
+                      backgroundColor: Colors.green.withOpacity(0.1),
+                      title: 'Organik',
+                      itemCount: value.categoryStats['Sampah Organik'] ?? 0,
+                    ),
+                    _recycleCategoryItem(
+                      imagePath: 'assets/images/ic_recycler_green.png',
+                      backgroundColor: Colors.blue.withOpacity(0.1),
+                      title: 'Anorganik',
+                      itemCount: value.categoryStats['Sampah Anorganik'] ?? 0,
+                    ),
+                    _recycleCategoryItem(
+                      imagePath: 'assets/images/ic_residu.png',
+                      backgroundColor: Colors.brown.withOpacity(0.1),
+                      title: 'Residu',
+                      itemCount: value.categoryStats['Sampah Residu'] ?? 0,
+                    ),
+                    _recycleCategoryItem(
+                      imagePath: 'assets/images/ic_hazard.png',
+                      backgroundColor: Colors.orange.withOpacity(0.1),
+                      title: 'B3',
+                      itemCount: value.categoryStats['Sampah B3'] ?? 0,
+                    ),
+                    _recycleCategoryItem(
+                      imagePath: 'assets/images/ic_electronic.png',
+                      backgroundColor: Colors.purple.withOpacity(0.1),
+                      title: 'Elektronik',
+                      itemCount: value.categoryStats['Sampah Elektronik'] ?? 0,
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
