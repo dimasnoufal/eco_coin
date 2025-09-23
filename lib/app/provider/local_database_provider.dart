@@ -6,14 +6,12 @@ import 'package:flutter/material.dart';
 class LocalDatabaseProvider extends ChangeNotifier {
   final LocalDatabase _localDatabase;
   LocalDatabaseProvider(this._localDatabase) {
-    // ✅ Auto-load data saat provider diinisialisasi
-    _initializeData();
+    // _initializeData();
   }
 
-  // ✅ Method untuk auto-load data
-  Future<void> _initializeData() async {
-    await loadAllWasteRecycling();
-  }
+  // Future<void> _initializeData() async {
+  //   await loadAllWasteRecycling();
+  // }
 
   String _message = "";
   String get message => _message;
@@ -61,7 +59,6 @@ class LocalDatabaseProvider extends ChangeNotifier {
         _status = true;
         printY(_message);
 
-        // ✅ Refresh data setelah insert berhasil
         await loadAllWasteRecycling();
         notifyListeners();
       }
@@ -76,7 +73,7 @@ class LocalDatabaseProvider extends ChangeNotifier {
   Future<void> loadAllWasteRecycling() async {
     try {
       _itemsList = await _localDatabase.getAllItems();
-      doTotalCategoryStats(); // ✅ Reset dan hitung ulang stats
+      doTotalCategoryStats();
       _message = "All of your data is loaded";
       printY('$message: $_itemsList');
       notifyListeners();
@@ -104,12 +101,9 @@ class LocalDatabaseProvider extends ChangeNotifier {
       return;
     }
 
-    // ✅ Reset semua kategori ke 0 terlebih dahulu
     _categoryStats.updateAll((key, value) => 0);
 
-    // ✅ Hitung ulang berdasarkan data aktual
     for (final item in _itemsList!) {
-      // ✅ Normalize category name untuk matching yang lebih baik
       final normalizedCategory = _normalizeCategoryName(item.categoryName);
 
       printInfo(
@@ -131,7 +125,6 @@ class LocalDatabaseProvider extends ChangeNotifier {
     printInfo('Final Category Stats: $_categoryStats');
   }
 
-  // ✅ Helper method untuk normalize category name
   String _normalizeCategoryName(String categoryName) {
     final lower = categoryName.toLowerCase().trim();
 
@@ -158,12 +151,10 @@ class LocalDatabaseProvider extends ChangeNotifier {
         lower.contains('paper')) {
       return 'Sampah Residu';
     } else {
-      // ✅ Jika tidak cocok, coba exact match atau return original
       if (_categoryStats.containsKey(categoryName)) {
         return categoryName;
       }
 
-      // ✅ Fallback ke kategori yang paling mendekati
       printX('Unknown category: $categoryName, defaulting to Sampah Anorganik');
       return 'Sampah Anorganik';
     }
