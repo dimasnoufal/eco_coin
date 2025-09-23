@@ -6,6 +6,7 @@ class RecyclingItem {
   final String confidence;
   final Uint8List image;
   final String date;
+  final int ecoPoints;
 
   RecyclingItem({
     this.id,
@@ -13,6 +14,7 @@ class RecyclingItem {
     required this.confidence,
     required this.image,
     required this.date,
+    required this.ecoPoints,
   });
 
   Map<String, dynamic> toJson() {
@@ -21,6 +23,7 @@ class RecyclingItem {
       'confidence': confidence,
       'image': image,
       'date': date,
+      'ecoPoints': ecoPoints,
     };
   }
 
@@ -31,6 +34,7 @@ class RecyclingItem {
       confidence: json['confidence'],
       image: json['image'],
       date: json['date'],
+      ecoPoints: json['ecoPoints'],
     );
   }
 }

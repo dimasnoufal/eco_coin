@@ -16,6 +16,7 @@ class CustomTextFormField extends StatelessWidget {
   final int? maxLength;
   final TextCapitalization textCapitalization;
   final bool showCounter;
+  final bool isReadOnly;
 
   const CustomTextFormField({
     super.key,
@@ -33,6 +34,7 @@ class CustomTextFormField extends StatelessWidget {
     this.maxLength,
     this.textCapitalization = TextCapitalization.none,
     this.showCounter = false,
+    this.isReadOnly = false,
   });
 
   @override
@@ -51,6 +53,7 @@ class CustomTextFormField extends StatelessWidget {
           const SizedBox(height: 8),
         ],
         TextFormField(
+          readOnly: isReadOnly,
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,

@@ -2,6 +2,7 @@ import 'package:eco_coin/app/helper/shared/app_color.dart';
 import 'package:eco_coin/app/helper/shared/common_utils.dart';
 import 'package:eco_coin/app/modules/home/provider/home_provider.dart';
 import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
+import 'package:eco_coin/app/provider/local_database_provider.dart';
 import 'package:eco_coin/app/services/waste_detection_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +46,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     setState(() => _isLoading = false);
+
+    context.read<LocalDatabaseProvider>().loadAllWasteRecycling();
   }
 
   Future<void> _loadWasteStats(String userId) async {
@@ -243,7 +246,10 @@ class ProfileContainer extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          totalEcoCoins.toString(),
+                                          context
+                                              .read<LocalDatabaseProvider>()
+                                              .totalPoints
+                                              .toString(),
                                           style: AppColor.bold.copyWith(
                                             fontSize: 24,
                                             color: AppColor.neutralBlack,
@@ -279,7 +285,10 @@ class ProfileContainer extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          totalRecycledWaste.toString(),
+                                          context
+                                              .read<LocalDatabaseProvider>()
+                                              .totalItems
+                                              .toString(),
                                           style: AppColor.bold.copyWith(
                                             fontSize: 24,
                                             color: AppColor.neutralBlack,
@@ -515,31 +524,51 @@ class RecycleCategoryContainer extends StatelessWidget {
                   imagePath: 'assets/images/ic_organic.png',
                   backgroundColor: Colors.green.withOpacity(0.1),
                   title: 'Organik',
-                  itemCount: categoryStats['organik'] ?? 0,
+                  itemCount:
+                      context
+                          .read<LocalDatabaseProvider>()
+                          .categoryStats['Sampah Organik'] ??
+                      0,
                 ),
                 _recycleCategoryItem(
                   imagePath: 'assets/images/ic_recycler_green.png',
                   backgroundColor: Colors.blue.withOpacity(0.1),
                   title: 'Anorganik',
-                  itemCount: categoryStats['anorganik'] ?? 0,
+                  itemCount:
+                      context
+                          .read<LocalDatabaseProvider>()
+                          .categoryStats['Sampah Anorganik'] ??
+                      0,
                 ),
                 _recycleCategoryItem(
                   imagePath: 'assets/images/ic_residu.png',
                   backgroundColor: Colors.brown.withOpacity(0.1),
                   title: 'Residu',
-                  itemCount: categoryStats['residu'] ?? 0,
+                  itemCount:
+                      context
+                          .read<LocalDatabaseProvider>()
+                          .categoryStats['Sampah Residu'] ??
+                      0,
                 ),
                 _recycleCategoryItem(
                   imagePath: 'assets/images/ic_hazard.png',
                   backgroundColor: Colors.orange.withOpacity(0.1),
                   title: 'B3',
-                  itemCount: categoryStats['b3'] ?? 0,
+                  itemCount:
+                      context
+                          .read<LocalDatabaseProvider>()
+                          .categoryStats['Sampah B3'] ??
+                      0,
                 ),
                 _recycleCategoryItem(
                   imagePath: 'assets/images/ic_electronic.png',
                   backgroundColor: Colors.purple.withOpacity(0.1),
                   title: 'Elektronik',
-                  itemCount: categoryStats['elektronik'] ?? 0,
+                  itemCount:
+                      context
+                          .read<LocalDatabaseProvider>()
+                          .categoryStats['Sampah Elektronik'] ??
+                      0,
                 ),
               ],
             ),

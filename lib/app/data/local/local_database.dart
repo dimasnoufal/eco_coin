@@ -12,7 +12,8 @@ class LocalDatabase {
         categoryName TEXT,
         confidence TEXT,
         image BLOB,
-        date TEXT
+        date TEXT,
+        ecoPoints INTEGER DEFAULT 0
       )
       """);
   }
