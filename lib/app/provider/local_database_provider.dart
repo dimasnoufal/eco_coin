@@ -5,7 +5,15 @@ import 'package:flutter/material.dart';
 
 class LocalDatabaseProvider extends ChangeNotifier {
   final LocalDatabase _localDatabase;
-  LocalDatabaseProvider(this._localDatabase);
+  LocalDatabaseProvider(this._localDatabase) {
+    // ✅ Auto-load data saat provider diinisialisasi
+    _initializeData();
+  }
+
+  // ✅ Method untuk auto-load data
+  Future<void> _initializeData() async {
+    await loadAllWasteRecycling();
+  }
 
   String _message = "";
   String get message => _message;
@@ -18,6 +26,25 @@ class LocalDatabaseProvider extends ChangeNotifier {
 
   RecyclingItem? _item;
   RecyclingItem? get item => _item;
+
+  int get totalPoints {
+    if (_itemsList == null || _itemsList!.isEmpty) return 0;
+    return _itemsList!.fold(0, (sum, item) => sum + item.ecoPoints);
+  }
+
+  int get totalItems {
+    return _itemsList?.length ?? 0;
+  }
+
+  final Map<String, int> _categoryStats = {
+    'Sampah Anorganik': 0,
+    'Sampah B3': 0,
+    'Sampah Elektronik': 0,
+    'Sampah Organik': 0,
+    'Sampah Residu': 0,
+  };
+
+  Map<String, int> get categoryStats => _categoryStats;
 
   Future<void> doWasteRecycling(RecyclingItem value) async {
     try {
@@ -33,6 +60,9 @@ class LocalDatabaseProvider extends ChangeNotifier {
         _message = "Your data is saved";
         _status = true;
         printY(_message);
+
+        // ✅ Refresh data setelah insert berhasil
+        await loadAllWasteRecycling();
         notifyListeners();
       }
     } catch (e) {
@@ -46,10 +76,13 @@ class LocalDatabaseProvider extends ChangeNotifier {
   Future<void> loadAllWasteRecycling() async {
     try {
       _itemsList = await _localDatabase.getAllItems();
+      doTotalCategoryStats(); // ✅ Reset dan hitung ulang stats
       _message = "All of your data is loaded";
+      printY('$message: $_itemsList');
       notifyListeners();
     } catch (e) {
       _message = "Failed to load your all data";
+      printX(_message);
       notifyListeners();
     }
   }
@@ -62,6 +95,77 @@ class LocalDatabaseProvider extends ChangeNotifier {
     } catch (e) {
       _message = "Failed to load your data";
       notifyListeners();
+    }
+  }
+
+  void doTotalCategoryStats() {
+    if (_itemsList == null) {
+      printInfo('Data not loaded yet.');
+      return;
+    }
+
+    // ✅ Reset semua kategori ke 0 terlebih dahulu
+    _categoryStats.updateAll((key, value) => 0);
+
+    // ✅ Hitung ulang berdasarkan data aktual
+    for (final item in _itemsList!) {
+      // ✅ Normalize category name untuk matching yang lebih baik
+      final normalizedCategory = _normalizeCategoryName(item.categoryName);
+
+      printInfo(
+        'Processing item: ${item.categoryName} -> normalized: $normalizedCategory',
+      );
+
+      if (_categoryStats.containsKey(normalizedCategory)) {
+        _categoryStats[normalizedCategory] =
+            (_categoryStats[normalizedCategory] ?? 0) + 1;
+        printInfo(
+          'Updated $normalizedCategory to ${_categoryStats[normalizedCategory]}',
+        );
+      } else {
+        printX('Category not found in stats: $normalizedCategory');
+        printInfo('Available categories: ${_categoryStats.keys.toList()}');
+      }
+    }
+
+    printInfo('Final Category Stats: $_categoryStats');
+  }
+
+  // ✅ Helper method untuk normalize category name
+  String _normalizeCategoryName(String categoryName) {
+    final lower = categoryName.toLowerCase().trim();
+
+    // Mapping dari berbagai format ke kategori yang sesuai
+    if (lower.contains('elektronik') || lower.contains('electronic')) {
+      return 'Sampah Elektronik';
+    } else if (lower.contains('organik') || lower.contains('organic')) {
+      return 'Sampah Organik';
+    } else if (lower.contains('anorganik') ||
+        lower.contains('plastik') ||
+        lower.contains('plastic') ||
+        lower.contains('logam') ||
+        lower.contains('metal') ||
+        lower.contains('kaca') ||
+        lower.contains('glass')) {
+      return 'Sampah Anorganik';
+    } else if (lower.contains('b3') ||
+        lower.contains('berbahaya') ||
+        lower.contains('hazard')) {
+      return 'Sampah B3';
+    } else if (lower.contains('residu') ||
+        lower.contains('residue') ||
+        lower.contains('kertas') ||
+        lower.contains('paper')) {
+      return 'Sampah Residu';
+    } else {
+      // ✅ Jika tidak cocok, coba exact match atau return original
+      if (_categoryStats.containsKey(categoryName)) {
+        return categoryName;
+      }
+
+      // ✅ Fallback ke kategori yang paling mendekati
+      printX('Unknown category: $categoryName, defaulting to Sampah Anorganik');
+      return 'Sampah Anorganik';
     }
   }
 

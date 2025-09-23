@@ -346,13 +346,15 @@ class _ResultDetectionState extends State<ResultDetection> {
                                               style: AppColor.blackTextStyle,
                                               children: [
                                                 TextSpan(
-                                                  text: _rewardFromLabel(
-                                                    provider
-                                                        .classifications
-                                                        .entries
-                                                        .first
-                                                        .key,
-                                                  ),
+                                                  text:
+                                                      '+' +
+                                                      _rewardFromLabel(
+                                                        provider
+                                                            .classifications
+                                                            .entries
+                                                            .first
+                                                            .key,
+                                                      ).toString(),
                                                   style: TextStyle(
                                                     color:
                                                         AppColor.emeraldDefault,
@@ -431,6 +433,13 @@ class _ResultDetectionState extends State<ResultDetection> {
                                       confidence: confidencePercentage,
                                       image: imageBytes,
                                       date: strDate!,
+                                      ecoPoints: _rewardFromLabel(
+                                        provider
+                                            .classifications
+                                            .entries
+                                            .first
+                                            .key,
+                                      ),
                                     ),
                                   );
 
@@ -445,9 +454,15 @@ class _ResultDetectionState extends State<ResultDetection> {
                                       .first
                                       .key
                                       .toString(),
-                                  ecoCoins: _rewardFromLabel(
-                                    provider.classifications.entries.first.key,
-                                  ),
+                                  ecoCoins:
+                                      '+' +
+                                      _rewardFromLabel(
+                                        provider
+                                            .classifications
+                                            .entries
+                                            .first
+                                            .key,
+                                      ).toString(),
                                   onBackToHome: () {
                                     Navigator.popUntil(
                                       context,
@@ -526,21 +541,21 @@ class _ResultDetectionState extends State<ResultDetection> {
     }
   }
 
-  String _rewardFromLabel(String? label) {
+  int _rewardFromLabel(String? label) {
     final cat = label?.trim() ?? '';
     switch (cat) {
       case 'Sampah B3':
-        return '+50';
+        return 50;
       case 'Sampah Elektronik':
-        return '+40';
+        return 40;
       case 'Sampah Residu':
-        return '+30';
+        return 30;
       case 'Sampah Anorganik':
-        return '+15';
+        return 15;
       case 'Sampah Organik':
-        return '+5';
+        return 5;
       default:
-        return '+5';
+        return 5;
     }
   }
 
