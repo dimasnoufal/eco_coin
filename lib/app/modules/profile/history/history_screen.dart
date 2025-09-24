@@ -1,4 +1,5 @@
 import 'package:eco_coin/app/helper/shared/app_color.dart';
+// import 'package:eco_coin/app/helper/shared/logger.dart';
 import 'package:eco_coin/app/provider/local_database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -135,6 +136,45 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     child: ListView.builder(
                       itemBuilder: (context, index) {
                         return ListTile(
+                          onTap: () {
+                            // printInfo('${historyItems[index].image}');
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Image.memory(
+                                          historyItems[index].image,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "Preview Gambar",
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.titleMedium,
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          child: const Text("Tutup"),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                           leading: CircleAvatar(
                             backgroundColor: AppColor.emeraldLight,
                             child: Icon(
