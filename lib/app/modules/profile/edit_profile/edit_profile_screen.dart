@@ -5,7 +5,6 @@ import 'package:eco_coin/app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../helper/shared/widget/shared_button.dart';
 import '../../../helper/shared/widget/shared_text_form_field.dart';
 import '../../../provider/firebase_auth_provider.dart';
 
@@ -144,109 +143,132 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(color: AppColor.emeraldDefault),
-          ),
-          Align(
-            alignment: Alignment.topCenter,
-            child: Column(
-              children: [
-                LocalProfileAvatar(radius: 50),
-                const SizedBox(height: 36),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.all(16),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColor.kWhite,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
+          Expanded(
+            child: SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: 200,
+                    decoration: BoxDecoration(color: AppColor.emeraldDefault),
                   ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.person, color: AppColor.emeraldDefault),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Informasi Pribadi',
-                            style: AppColor.blackTextStyle.copyWith(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Column(
+                      children: [
+                        LocalProfileAvatar(radius: 50),
+                        const SizedBox(height: 36),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.all(16),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: AppColor.kWhite,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CustomTextFormField(
-                              controller: _namaLengkapController,
-                              labelText: "Nama Lengkap",
-                              hintText: "Masukkan nama lengkap",
-                              textCapitalization: TextCapitalization.words,
-                              validator: (value) =>
-                                  Validators.required(value, "Nama lengkap"),
-                            ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.person,
+                                    color: AppColor.emeraldDefault,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Informasi Pribadi',
+                                    style: AppColor.blackTextStyle.copyWith(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Form(
+                                key: _formKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CustomTextFormField(
+                                      controller: _namaLengkapController,
+                                      labelText: "Nama Lengkap",
+                                      hintText: "Masukkan nama lengkap",
+                                      textCapitalization:
+                                          TextCapitalization.words,
+                                      validator: (value) => Validators.required(
+                                        value,
+                                        "Nama lengkap",
+                                      ),
+                                    ),
 
-                            const SizedBox(height: 12),
+                                    const SizedBox(height: 12),
 
-                            CustomTextFormField(
-                              controller: _namaPanggilanController,
-                              labelText: "Nama Panggilan",
-                              hintText: "Masukkan nama panggilan",
-                              textCapitalization: TextCapitalization.words,
-                              validator: (value) =>
-                                  Validators.required(value, "Nama panggilan"),
-                            ),
+                                    CustomTextFormField(
+                                      controller: _namaPanggilanController,
+                                      labelText: "Nama Panggilan",
+                                      hintText: "Masukkan nama panggilan",
+                                      textCapitalization:
+                                          TextCapitalization.words,
+                                      validator: (value) => Validators.required(
+                                        value,
+                                        "Nama panggilan",
+                                      ),
+                                    ),
 
-                            const SizedBox(height: 12),
+                                    const SizedBox(height: 12),
 
-                            CustomTextFormField(
-                              controller: _emailController,
-                              labelText: "Email",
-                              hintText: "Masukkan email anda",
-                              keyboardType: TextInputType.emailAddress,
-                              validator: Validators.email,
-                              isReadOnly: true,
-                            ),
+                                    CustomTextFormField(
+                                      controller: _emailController,
+                                      labelText: "Email",
+                                      hintText: "Masukkan email anda",
+                                      keyboardType: TextInputType.emailAddress,
+                                      validator: Validators.email,
+                                      isReadOnly: true,
+                                    ),
 
-                            const SizedBox(height: 12),
-                          ],
+                                    const SizedBox(height: 12),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
+
           Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Consumer<FirebaseAuthProvider>(
-                builder: (context, authProvider, child) {
-                  return PrimaryButton(
-                    text: "Simpan Perubahan",
-                    onPressed: _handleUpdateProfile,
-                    isLoading: false,
-                  );
-                },
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: _handleUpdateProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor.emeraldDefault,
+                minimumSize: const Size.fromHeight(50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Simpan Perubahan',
+                style: AppColor.whiteTextStyle.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
