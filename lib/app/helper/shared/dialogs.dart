@@ -21,6 +21,20 @@ class Dialogs {
       },
     );
   }
+
+  static Future<void> showExitDialog({
+    required BuildContext context,
+    VoidCallback? onExit,
+  }) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (BuildContext context) {
+        return _ExitDialog(onExit: onExit);
+      },
+    );
+  }
 }
 
 class _SuccessDialog extends StatefulWidget {
@@ -238,6 +252,206 @@ class _SuccessDialogState extends State<_SuccessDialog>
                     ),
                   ),
                 ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ExitDialog extends StatefulWidget {
+  final VoidCallback? onExit;
+
+  const _ExitDialog({this.onExit});
+
+  @override
+  State<_ExitDialog> createState() => _ExitDialogState();
+}
+
+class _ExitDialogState extends State<_ExitDialog>
+    with TickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late AnimationController _fadeController;
+
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack),
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
+
+    _scaleController.forward();
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleExit() async {
+    await Future.wait([_scaleController.reverse(), _fadeController.reverse()]);
+
+    if (mounted) {
+      Navigator.of(context).pop();
+      widget.onExit?.call();
+    }
+  }
+
+  Future<void> _handleCancel() async {
+    await Future.wait([_scaleController.reverse(), _fadeController.reverse()]);
+
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Center(
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icon
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.exit_to_app,
+                        size: 32,
+                        color: Colors.redAccent,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Title
+                    Text(
+                      'Keluar Aplikasi',
+                      style: AppColor.blackTextStyle.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Description
+                    Text(
+                      'Apakah Anda yakin ingin keluar dari aplikasi?',
+                      style: AppColor.greyTextStyle.copyWith(
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Buttons
+                    Row(
+                      children: [
+                        // Cancel Button
+                        Expanded(
+                          child: TextButton(
+                            onPressed: _handleCancel,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(
+                                  color: AppColor.kGrey2.withOpacity(0.5),
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              'Batal',
+                              style: AppColor.greyTextStyle.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        // Exit Button
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _handleExit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              'Keluar',
+                              style: AppColor.whiteTextStyle.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

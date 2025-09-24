@@ -43,6 +43,8 @@ class CameraView extends StatefulWidget {
 
 class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
   bool _isCameraInitialized = false;
+  bool _isSwitching = false;
+  bool _isTakingPicture = false;
 
   List<CameraDescription> _cameras = [];
 
@@ -56,6 +58,7 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
 
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
     final previousCameraController = controller;
+
     final cameraController = CameraController(
       cameraDescription,
       ResolutionPreset.medium,
@@ -65,19 +68,52 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
           : ImageFormatGroup.bgra8888,
     );
 
-    await previousCameraController?.dispose();
+    if (previousCameraController != null &&
+        previousCameraController.value.isInitialized &&
+        previousCameraController.value.isStreamingImages) {
+      try {
+        await previousCameraController.stopImageStream();
+      } catch (e) {
+        printX('Error stopping image stream: $e');
+      }
+    }
+
+    if (previousCameraController != null) {
+      try {
+        await previousCameraController.dispose();
+      } catch (e) {
+        printX('Error disposing previous controller: $e');
+      }
+    }
 
     try {
       await cameraController.initialize();
-      if (mounted) {
-        setState(() {
-          controller = cameraController;
-          controller!.startImageStream(_processCameraImage);
-          _isCameraInitialized = controller!.value.isInitialized;
-        });
+
+      if (!mounted) {
+        await cameraController.dispose();
+        return;
+      }
+
+      controller = cameraController;
+      _isCameraInitialized = cameraController.value.isInitialized;
+
+      setState(() {});
+
+      if (controller != null && controller!.value.isInitialized && mounted) {
+        try {
+          await controller!.startImageStream(_processCameraImage);
+        } catch (e) {
+          printX('Error starting image stream: $e');
+        }
       }
     } catch (e) {
       printX('❌ Error initializing camera: $e');
+      try {
+        await cameraController.dispose();
+      } catch (disposeError) {
+        printX('Error disposing failed controller: $disposeError');
+      }
+
       if (mounted) {
         _showErrorDialog('Failed to initialize camera: $e');
       }
@@ -155,14 +191,30 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
 
-    controller?.stopImageStream().catchError((e) {
-      printX('Error stopping image stream: $e');
-    });
-    controller?.dispose().catchError((e) {
-      printX('Error disposing controller: $e');
-    });
+    _disposeCameraController();
 
     super.dispose();
+  }
+
+  Future<void> _disposeCameraController() async {
+    final currentController = controller;
+    if (currentController != null) {
+      try {
+        if (currentController.value.isInitialized &&
+            currentController.value.isStreamingImages) {
+          await currentController.stopImageStream();
+        }
+      } catch (e) {
+        printX('Error stopping image stream during dispose: $e');
+      }
+
+      try {
+        await currentController.dispose();
+      } catch (e) {
+        printX('Error disposing controller: $e');
+      }
+    }
+    controller = null;
   }
 
   @override
@@ -175,12 +227,33 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
 
     switch (state) {
       case AppLifecycleState.inactive:
-        cameraController.dispose();
+      case AppLifecycleState.paused:
+        if (cameraController.value.isStreamingImages) {
+          cameraController.stopImageStream().catchError((e) {
+            printX('Error stopping image stream on app pause: $e');
+          });
+        }
+        cameraController.dispose().catchError((e) {
+          printX('Error disposing controller on app pause: $e');
+        });
+        if (mounted) {
+          setState(() {
+            controller = null;
+            _isCameraInitialized = false;
+          });
+        }
         break;
       case AppLifecycleState.resumed:
-        onNewCameraSelected(cameraController.description);
+        if (_cameras.isNotEmpty && controller == null) {
+          final lastUsedCamera = _cameras.firstWhere(
+            (camera) => camera.lensDirection == CameraLensDirection.back,
+            orElse: () => _cameras.first,
+          );
+          onNewCameraSelected(lastUsedCamera);
+        }
         break;
       default:
+        break;
     }
   }
 
@@ -190,6 +263,14 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
       printX('❌ Camera not ready for capture');
       return;
     }
+
+    if (_isTakingPicture) {
+      printX('📸 Picture capture already in progress');
+      return;
+    }
+
+    _isTakingPicture = true;
+    setState(() {});
 
     try {
       HapticFeedback.lightImpact();
@@ -214,10 +295,122 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
           ),
         );
       }
+    } finally {
+      _isTakingPicture = false;
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
+  Future<void> switchCamera() async {
+    if (_cameras.length < 2) {
+      printX('❌ Only one camera available');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Hanya ada satu kamera tersedia'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
+    if (_isSwitching) {
+      printX('⚠️ Camera switch already in progress');
+      return;
+    }
+
+    _isSwitching = true;
+    setState(() {});
+
+    try {
+      HapticFeedback.lightImpact();
+
+      final currentController = controller;
+      if (currentController == null || !currentController.value.isInitialized) {
+        printX('❌ Camera controller not ready for switching');
+        return;
+      }
+
+      final currentCamera = currentController.description;
+
+      CameraDescription newCamera;
+      if (currentCamera.lensDirection == CameraLensDirection.back) {
+        newCamera = _cameras.firstWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.front,
+          orElse: () => _cameras.first,
+        );
+      } else {
+        newCamera = _cameras.firstWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.back,
+          orElse: () => _cameras.first,
+        );
+      }
+
+      if (currentController.value.isStreamingImages) {
+        await currentController.stopImageStream().catchError((e) {
+          printX('Error stopping image stream during switch: $e');
+        });
+      }
+
+      if (mounted) {
+        setState(() {
+          controller = null;
+          _isCameraInitialized = false;
+        });
+      }
+
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      await onNewCameraSelected(newCamera);
+
+      final newController = controller;
+      if (newController != null && newController.value.isInitialized) {
+        await newController
+            .setFlashMode(
+              flash == 0
+                  ? FlashMode.off
+                  : flash == 1
+                  ? FlashMode.always
+                  : flash == 2
+                  ? FlashMode.auto
+                  : FlashMode.torch,
+            )
+            .catchError((e) {
+              printX('Error setting flash mode: $e');
+            });
+      }
+
+      printY(
+        '✅ Camera switched to ${newCamera.lensDirection == CameraLensDirection.front ? 'front' : 'back'}',
+      );
+    } catch (e) {
+      printX('❌ Error switching camera: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal mengganti kamera: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      _isSwitching = false;
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
   flashMode() {
+    final currentController = controller;
+    if (currentController == null || !currentController.value.isInitialized) {
+      printX('❌ Camera not ready for flash mode change');
+      return;
+    }
+
     flash = flash == 0
         ? 1
         : flash == 1
@@ -225,21 +418,30 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
         : flash == 2
         ? 3
         : 0;
-    controller?.setFlashMode(
-      flash == 0
-          ? FlashMode.off
-          : flash == 1
-          ? FlashMode.always
-          : flash == 2
-          ? FlashMode.auto
-          : FlashMode.torch,
-    );
+
+    currentController
+        .setFlashMode(
+          flash == 0
+              ? FlashMode.off
+              : flash == 1
+              ? FlashMode.always
+              : flash == 2
+              ? FlashMode.auto
+              : FlashMode.torch,
+        )
+        .catchError((e) {
+          printX('Error setting flash mode: $e');
+        });
+
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isCameraInitialized
+    return (_isCameraInitialized &&
+            controller != null &&
+            controller!.value.isInitialized &&
+            !_isSwitching)
         ? Stack(
             children: [
               SizedBox(
@@ -420,7 +622,6 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Container Placeholder (For spacings)
                       Container(
                         width: 60,
                         height: 60,
@@ -428,7 +629,13 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
                       ),
 
                       GestureDetector(
-                        onTap: takePicture,
+                        onTap: () async {
+                          if (_isTakingPicture) return;
+                          await takePicture();
+                        },
+                        onTapDown: (_) {
+                          HapticFeedback.lightImpact();
+                        },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 150),
                           width: 80,
@@ -445,29 +652,65 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            Icons.camera_alt,
-                            color: Colors.green,
-                            size: 36,
-                          ),
+                          child: _isTakingPicture
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.green,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.green,
+                                  size: 36,
+                                ),
                         ),
                       ),
 
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                            width: 2,
+                      GestureDetector(
+                        onTap: () async {
+                          if (_isSwitching) return;
+                          await switchCamera();
+                        },
+                        onTapDown: (_) {
+                          HapticFeedback.lightImpact();
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: _isSwitching
+                                ? Colors.green.withOpacity(0.3)
+                                : Colors.black.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                              color: _isSwitching
+                                  ? Colors.green.withOpacity(0.5)
+                                  : Colors.white.withOpacity(0.3),
+                              width: 2,
+                            ),
                           ),
-                        ),
-                        child: const Icon(
-                          Icons.cameraswitch,
-                          color: Colors.white,
-                          size: 28,
+                          child: _isSwitching
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.green,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.cameraswitch,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
                         ),
                       ),
                     ],
@@ -507,8 +750,8 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
             ],
           )
         : Container(
-            decoration: BoxDecoration(color: Colors.white),
-            child: const Center(
+            decoration: BoxDecoration(color: Colors.black),
+            child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -518,7 +761,9 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
                   ),
                   SizedBox(height: 20),
                   Text(
-                    'Menyiapkan kamera...',
+                    _isSwitching
+                        ? 'Mengganti kamera...'
+                        : 'Menyiapkan kamera...',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,

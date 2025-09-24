@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:animations/animations.dart';
 import 'package:eco_coin/app/helper/shared/app_color.dart';
+import 'package:eco_coin/app/helper/shared/dialogs.dart';
 import 'package:eco_coin/app/helper/shared/logger.dart';
 import 'package:eco_coin/app/modules/home/provider/home_provider.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +17,12 @@ class HomeView extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (value, result) {
         printInfo('onPopInvokedWithResult: $value, result: $result');
+        Dialogs.showExitDialog(
+          context: context,
+          onExit: () {
+            exit(0);
+          },
+        );
       },
       child: Scaffold(
         body: PageTransitionSwitcher(
