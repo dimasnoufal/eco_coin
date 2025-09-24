@@ -13,14 +13,20 @@ class ImageClassificationProvider extends ChangeNotifier {
 
   Map<String, num> get classifications => _classifications;
 
+  bool _status = false;
+
+  bool get status => _status;
+
   Future<void> runClassificationFromFile(String imagePath) async {
     try {
       _classifications = await _service.inferenceImage(imagePath);
       printInfo('Classifications: $_classifications');
+      _status = true;
       notifyListeners();
     } catch (e) {
       printX('❌ Error in file classification: $e');
       _classifications = {};
+      _status = false;
       notifyListeners();
     }
   }
