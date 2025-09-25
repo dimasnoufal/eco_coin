@@ -1,4 +1,5 @@
 import 'package:eco_coin/app/helper/shared/logger.dart';
+import 'package:eco_coin/app/helper/shared/static_state.dart';
 import 'package:eco_coin/app/services/image_classification_services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -9,24 +10,31 @@ class ImageClassificationProvider extends ChangeNotifier {
     _service.initHelper();
   }
 
-  Map<String, num> _classifications = {};
+  StaticResultState<Map<String, num>> _resultState = StaticResultNone();
 
-  Map<String, num> get classifications => _classifications;
-
-  bool _status = false;
-
-  bool get status => _status;
+  StaticResultState<Map<String, num>> get resultState => _resultState;
 
   Future<void> runClassificationFromFile(String imagePath) async {
+    _resultState = StaticResultLoading();
+    notifyListeners();
+
     try {
-      _classifications = await _service.inferenceImage(imagePath);
-      printInfo('Classifications: $_classifications');
-      _status = true;
-      notifyListeners();
+      final resultClasification = await _service.inferenceImage(imagePath);
+      printInfo('resultClasification: $resultClasification');
+
+      if (resultClasification.isEmpty) {
+        _resultState = StaticResultError('No classification found');
+        printX('❌ No classification found');
+        notifyListeners();
+        return;
+      } else {
+        _resultState = StaticResultLoaded(resultClasification);
+        printY('Classifications: $_resultState');
+        notifyListeners();
+      }
     } catch (e) {
       printX('❌ Error in file classification: $e');
-      _classifications = {};
-      _status = false;
+      _resultState = StaticResultError('Error: $e');
       notifyListeners();
     }
   }
