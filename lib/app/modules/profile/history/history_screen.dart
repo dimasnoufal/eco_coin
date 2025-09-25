@@ -1,4 +1,5 @@
 import 'package:eco_coin/app/helper/shared/app_color.dart';
+import 'package:eco_coin/app/helper/shared/common_utils.dart';
 // import 'package:eco_coin/app/helper/shared/logger.dart';
 import 'package:eco_coin/app/provider/local_database_provider.dart';
 import 'package:flutter/material.dart';
@@ -118,7 +119,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           Consumer<LocalDatabaseProvider>(
             builder: (context, value, child) {
               final historyItems = value.itemsList;
-              if (historyItems != null) {
+              if (!CommonUtils.falsyChecker(historyItems)) {
                 return Expanded(
                   child: Container(
                     margin: const EdgeInsets.all(16),
