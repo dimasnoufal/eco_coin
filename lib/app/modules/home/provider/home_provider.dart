@@ -1,6 +1,6 @@
 import 'package:eco_coin/app/modules/home/widget/camera_screen.dart';
 import 'package:eco_coin/app/modules/home/widget/dashboard_screen.dart';
-import 'package:eco_coin/app/modules/profile/profile_screen.dart';
+import 'package:eco_coin/app/modules/home/widget/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeProvider extends ChangeNotifier {

@@ -3,7 +3,6 @@ import 'package:eco_coin/app/helper/shared/common_utils.dart';
 import 'package:eco_coin/app/modules/home/provider/home_provider.dart';
 import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
 import 'package:eco_coin/app/provider/local_database_provider.dart';
-// import 'package:eco_coin/app/services/waste_detection_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

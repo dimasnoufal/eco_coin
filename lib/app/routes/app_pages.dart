@@ -1,10 +1,10 @@
 import 'package:eco_coin/app/modules/home/provider/image_classification_provider.dart';
 import 'package:eco_coin/app/modules/home/ui/home_view.dart';
+import 'package:eco_coin/app/modules/home/widget/profile/edit_profile/edit_profile_screen.dart';
+import 'package:eco_coin/app/modules/home/widget/profile/history/history_screen.dart';
+import 'package:eco_coin/app/modules/home/widget/profile/profile_screen.dart';
 import 'package:eco_coin/app/modules/login/login_screen.dart';
 import 'package:eco_coin/app/modules/onboarding/onboarding_screen.dart';
-import 'package:eco_coin/app/modules/profile/edit_profile/edit_profile_screen.dart';
-import 'package:eco_coin/app/modules/profile/history/history_screen.dart';
-import 'package:eco_coin/app/modules/profile/profile_screen.dart';
 import 'package:eco_coin/app/modules/register/register_screen.dart';
 import 'package:eco_coin/app/modules/result_detection/ui/result_detection.dart';
 import 'package:eco_coin/app/modules/splash/splash_screen.dart';

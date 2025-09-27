@@ -1,12 +1,11 @@
 import 'package:eco_coin/app/helper/shared/app_color.dart';
+import 'package:eco_coin/app/helper/shared/widget/local_image.dart';
+import 'package:eco_coin/app/helper/shared/widget/shared_text_form_field.dart';
 import 'package:eco_coin/app/model/user_model.dart';
-import 'package:eco_coin/app/modules/profile/profile_screen.dart';
+import 'package:eco_coin/app/provider/firebase_auth_provider.dart';
 import 'package:eco_coin/app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../helper/shared/widget/shared_text_form_field.dart';
-import '../../../provider/firebase_auth_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -20,6 +19,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _namaLengkapController = TextEditingController();
   final _namaPanggilanController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _bioController = TextEditingController();
 
   @override
   void initState() {
@@ -35,6 +37,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _namaLengkapController.text = userModel.namaLengkap;
       _namaPanggilanController.text = userModel.namaPanggilan;
       _emailController.text = userModel.email;
+      _phoneNumberController.text = userModel.phoneNumber ?? '';
+      _addressController.text = userModel.address ?? '';
+      _bioController.text = userModel.bio ?? '';
     }
   }
 
@@ -43,6 +48,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _namaLengkapController.dispose();
     _namaPanggilanController.dispose();
     _emailController.dispose();
+    _phoneNumberController.dispose();
+    _addressController.dispose();
+    _bioController.dispose();
     super.dispose();
   }
 
@@ -52,6 +60,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final email = _emailController.text.trim();
     final namaLengkap = _namaLengkapController.text.trim();
     final namaPanggilan = _namaPanggilanController.text.trim();
+    final phoneNumber = _phoneNumberController.text.trim();
+    final address = _addressController.text.trim();
+    final bio = _bioController.text.trim();
 
     if (email.isNotEmpty &&
         namaLengkap.isNotEmpty &&
@@ -76,9 +87,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         email: email,
         namaLengkap: namaLengkap,
         namaPanggilan: namaPanggilan,
-        phoneNumber: currentUser.phoneNumber,
-        address: currentUser.address,
-        bio: currentUser.bio,
+        phoneNumber: phoneNumber.isNotEmpty ? phoneNumber : null,
+        address: address.isNotEmpty ? address : null,
+        bio: bio.isNotEmpty ? bio : null,
         createdAt: currentUser.createdAt,
         updatedAt: DateTime.now(),
       );
@@ -109,7 +120,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
       }
     } else {
-      const message = "Lengkapi semua field dengan benar";
+      const message = "Lengkapi semua field yang wajib diisi";
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(message),
@@ -158,7 +169,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     alignment: Alignment.topCenter,
                     child: Column(
                       children: [
-                        LocalProfileAvatar(radius: 50),
+                        LocalProfileAvatar(radius: 50, imagePath: ''),
                         const SizedBox(height: 36),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -238,12 +249,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
 
                                     const SizedBox(height: 12),
+
+                                    CustomTextFormField(
+                                      controller: _phoneNumberController,
+                                      labelText: "Nomor Telepon",
+                                      hintText: "Masukkan nomor telepon",
+                                      keyboardType: TextInputType.phone,
+                                      prefixText: "+62 ",
+                                      validator: Validators.phone,
+                                    ),
+
+                                    const SizedBox(height: 12),
+
+                                    CustomTextFormField(
+                                      controller: _addressController,
+                                      labelText: "Alamat",
+                                      hintText: "Masukkan alamat",
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      maxLines: 2,
+                                    ),
+
+                                    const SizedBox(height: 12),
+
+                                    CustomTextFormField(
+                                      controller: _bioController,
+                                      labelText: "Bio",
+                                      hintText: "Masukkan bio",
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      maxLines: 3,
+                                      maxLength: 100,
+                                      validator: Validators.bio,
+                                    ),
+
+                                    const SizedBox(height: 12),
                                   ],
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        const SizedBox(height: 24),
                       ],
                     ),
                   ),
@@ -263,12 +310,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(
-                'Simpan Perubahan',
-                style: AppColor.whiteTextStyle.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.save, color: Colors.white, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Simpan Perubahan',
+                    style: AppColor.whiteTextStyle.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

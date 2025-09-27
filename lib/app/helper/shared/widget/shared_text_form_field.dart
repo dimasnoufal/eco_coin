@@ -9,6 +9,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool obscureText;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
+  final String? prefixText;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
   final bool enabled;
@@ -27,6 +28,7 @@ class CustomTextFormField extends StatelessWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.prefixIcon,
+    this.prefixText,
     this.validator,
     this.onChanged,
     this.enabled = true,
@@ -59,7 +61,7 @@ class CustomTextFormField extends StatelessWidget {
           obscureText: obscureText,
           enabled: enabled,
           maxLines: maxLines,
-          maxLength: maxLength,
+          maxLength: showCounter ? maxLength : null,
           textCapitalization: textCapitalization,
           decoration: _buildInputDecoration(),
           style: AppColor.regular.copyWith(
@@ -67,16 +69,37 @@ class CustomTextFormField extends StatelessWidget {
           ),
           validator: validator,
           onChanged: onChanged,
-          buildCounter: showCounter && maxLength != null
-              ? null
-              : (
-                  context, {
-                  required currentLength,
-                  required isFocused,
-                  maxLength,
-                }) => null,
+          buildCounter: _buildCounter,
         ),
+        if (!showCounter && maxLength != null) _buildCustomCounter(),
       ],
+    );
+  }
+
+  Widget? _buildCounter(
+    BuildContext context, {
+    required int currentLength,
+    required bool isFocused,
+    int? maxLength,
+  }) {
+    if (!showCounter) return null;
+
+    return Text(
+      '$currentLength${maxLength != null ? '/$maxLength' : ''}',
+      style: AppColor.regular.copyWith(fontSize: 12, color: AppColor.neutral40),
+    );
+  }
+
+  Widget _buildCustomCounter() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 12, top: 4),
+      child: Text(
+        "Max. $maxLength Karakter",
+        style: AppColor.regular.copyWith(
+          fontSize: 12,
+          color: AppColor.neutral40,
+        ),
+      ),
     );
   }
 
@@ -86,8 +109,16 @@ class CustomTextFormField extends StatelessWidget {
       hintStyle: AppColor.regular.copyWith(color: AppColor.neutral30),
       suffixIcon: suffixIcon,
       prefixIcon: prefixIcon,
+      prefixText: prefixText,
+      prefixStyle: prefixText != null
+          ? AppColor.regular.copyWith(
+              color: enabled ? AppColor.neutralBlack : AppColor.neutral40,
+            )
+          : null,
       filled: true,
-      fillColor: enabled ? AppColor.neutralWhite : AppColor.neutral10,
+      fillColor: enabled
+          ? (isReadOnly ? AppColor.neutral10 : AppColor.neutralWhite)
+          : AppColor.neutral10,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
@@ -97,11 +128,17 @@ class CustomTextFormField extends StatelessWidget {
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColor.neutral20, width: 1),
+        borderSide: BorderSide(
+          color: isReadOnly ? AppColor.neutral20 : AppColor.neutral20,
+          width: 1,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColor.emeraldDefault, width: 2),
+        borderSide: BorderSide(
+          color: isReadOnly ? AppColor.neutral20 : AppColor.emeraldDefault,
+          width: isReadOnly ? 1 : 2,
+        ),
       ),
       disabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -336,10 +373,20 @@ class Validators {
 
   static String? phone(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Nomor telepon tidak boleh kosong';
+      return null;
     }
-    if (value.length < 10 || value.length > 13) {
+    if (value.length < 9 || value.length > 13) {
       return 'Nomor telepon tidak valid';
+    }
+    return null;
+  }
+
+  static String? bio(String? value) {
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+    if (value.length > 100) {
+      return 'Bio maksimal 100 karakter';
     }
     return null;
   }
