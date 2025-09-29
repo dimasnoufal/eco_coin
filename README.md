@@ -36,11 +36,11 @@
 ## 📸 Tampilan
 
 <p align="center">
-  <img src="/Screenshot_20250929-153414.jpg" alt="Image 1" width="150"/>
-  <img src="/Screenshot_20250929-153419.jpg" alt="Image 2" width="150"/>
-  <img src="/Screenshot_20250929-203308.jpg" alt="Image 3" width="150"/>
-  <img src="/Screenshot_20250929-203417.jpg" alt="Image 5" width="150"/>
-  <img src="/Screenshot_20250929-203430.jpg" alt="Image 4" width="150"/>
+  <img src="readme_asset/Screenshot_20250929-153414.jpg" alt="Image 1" width="150"/>
+  <img src="readme_asset/Screenshot_20250929-153419.jpg" alt="Image 2" width="150"/>
+  <img src="readme_asset/Screenshot_20250929-203308.jpg" alt="Image 3" width="150"/>
+  <img src="readme_asset/Screenshot_20250929-203417.jpg" alt="Image 5" width="150"/>
+  <img src="readme_asset/Screenshot_20250929-203430.jpg" alt="Image 4" width="150"/>
 </p>
 
 ---
