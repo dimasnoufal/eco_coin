@@ -123,8 +123,7 @@ class IsolateInference {
                   .map(
                     (row) => row
                         .map(
-                          (pixel) =>
-                              pixel.map((channel) => channel / 255.0).toList(),
+                          (pixel) => pixel.map((channel) => channel).toList(),
                         )
                         .toList(),
                   )
