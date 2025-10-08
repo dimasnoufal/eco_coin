@@ -68,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               backgroundColor: AppColor.emeraldDefault,
             ),
           );
-          navigator.pushReplacementNamed(Routes.home);
+          navigator.pushNamedAndRemoveUntil(Routes.home, (route) => false);
           break;
         default:
           scaffoldMessenger.showSnackBar(

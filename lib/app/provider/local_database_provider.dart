@@ -129,12 +129,41 @@ class LocalDatabaseProvider extends ChangeNotifier {
     final lower = categoryName.toLowerCase().trim();
 
     // Mapping dari berbagai format ke kategori yang sesuai
-    if (lower.contains('elektronik') || lower.contains('electronic')) {
+    printInfo('Normalizing category: $categoryName -> $lower');
+
+    // Exact match dulu untuk menghindari substring issues
+    if (lower == 'sampah elektronik' ||
+        lower == 'elektronik' ||
+        lower == 'electronic') {
       return 'Sampah Elektronik';
-    } else if (lower.contains('organik') || lower.contains('organic')) {
+    } else if (lower == 'sampah anorganik' ||
+        lower == 'anorganik' ||
+        lower == 'inorganic') {
+      return 'Sampah Anorganik';
+    } else if (lower == 'sampah organik' ||
+        lower == 'organik' ||
+        lower == 'organic') {
       return 'Sampah Organik';
-    } else if (lower.contains('anorganik') ||
-        lower.contains('plastik') ||
+    } else if (lower == 'sampah b3' ||
+        lower == 'b3' ||
+        lower == 'berbahaya' ||
+        lower == 'hazardous') {
+      return 'Sampah B3';
+    } else if (lower == 'sampah residu' ||
+        lower == 'residu' ||
+        lower == 'residue') {
+      return 'Sampah Residu';
+    }
+    // Jika exact match tidak ada, baru pakai contains (dengan urutan yang benar)
+    else if (lower.contains('elektronik') || lower.contains('electronic')) {
+      return 'Sampah Elektronik';
+    } else if (lower.contains('anorganik')) {
+      // ✅ Cek anorganik dulu
+      return 'Sampah Anorganik';
+    } else if (lower.contains('organik') || lower.contains('organic')) {
+      // ✅ Baru organik
+      return 'Sampah Organik';
+    } else if (lower.contains('plastik') ||
         lower.contains('plastic') ||
         lower.contains('logam') ||
         lower.contains('metal') ||
