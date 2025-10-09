@@ -56,5 +56,6 @@ EcoCoin tidak hanya aplikasi **pemilah sampah**, tetapi juga **platform motivasi
 * https://www.kaggle.com/datasets/sumn2u/garbage-classification-v2
 * https://www.kaggle.com/datasets/mostafaabla/garbage-classification
 * https://www.kaggle.com/datasets/akshat103/e-waste-image-dataset
-
+* https://www.kaggle.com/datasets/farmermatzle/keyboard-key-detection
+* https://www.kaggle.com/datasets/dvk2609/brush-teeth-dataset
 ---
