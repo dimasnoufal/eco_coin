@@ -59,3 +59,40 @@ EcoCoin tidak hanya aplikasi **pemilah sampah**, tetapi juga **platform motivasi
 * https://www.kaggle.com/datasets/farmermatzle/keyboard-key-detection
 * https://www.kaggle.com/datasets/dvk2609/brush-teeth-dataset
 ---
+
+## ⚙️ Installation
+1. Install Flutter
+Pastikan kamu sudah menginstal **Flutter SDK** di perangkatmu.  
+Jika belum, ikuti panduan resmi di:  
+👉 [Flutter Installation Guide](https://docs.flutter.dev/get-started/install)
+
+2. Clone the repository:
+Clone proyek ini ke komputer lokal:
+```bash
+ git clone https://github.com/yourusername/yourproject.git
+```
+
+3. Install dependencies:
+Jalankan perintah berikut untuk mengunduh semua dependency:
+```bash
+ flutter pub get
+ ```
+ 
+4. Inisialisasi Firebase:
+- Buka Firebase Console.
+- Tambahkan proyek Firebase baru (atau gunakan yang sudah ada).
+- Tambahkan aplikasi Android ke proyek tersebut.
+- Unduh file google-services.json.
+- Letakkan file tersebut di:
+
+```bash
+ /android/app/google-services.json
+ ```
+ 
+5. Jalankan Aplikasi:
+Setelah konfigurasi selesai, jalankan aplikasi dengan:
+```bash
+ flutter run
+ ```
+
+---
