@@ -16,9 +16,9 @@ class AppColor {
 
   // Status color
   static const kInfoColor = kBlueInfo;
-  static const kSuccessColor = Color(0xFF22C55E);
-  static const kWarningColor = Color(0xFFF59E0B);
-  static const kErrorColor = Color(0xFFEF4444);
+  static const kSuccessColor = emeraldDefault;
+  static const kWarningColor = orangeDefault;
+  static const kErrorColor = rubyDefault;
 
   // Backgrounds color
   static const kPage = Color(0xFFF9FAFB);
@@ -71,9 +71,9 @@ class AppColor {
   static const kTextBlack = kSoftBlack;
   static const kTextWhite = kWhite;
 
-  static TextStyle blackTextStyle = GoogleFonts.inter(color: kTextBlack);
-  static TextStyle whiteTextStyle = GoogleFonts.inter(color: kTextWhite);
-  static TextStyle greyTextStyle = GoogleFonts.inter(color: kGrey);
+  static TextStyle blackTextStyle = GoogleFonts.inter(color: neutralBlack);
+  static TextStyle whiteTextStyle = GoogleFonts.inter(color: neutralWhite);
+  static TextStyle greyTextStyle = GoogleFonts.inter(color: neutral40);
 
   static TextStyle get regular =>
       GoogleFonts.inter(fontWeight: FontWeight.w400);
@@ -88,29 +88,29 @@ class AppColor {
     brightness: Brightness.light,
     scaffoldBackgroundColor: kPage,
     colorScheme: const ColorScheme.light(
-      primary: kPrimaryColor,
-      secondary: kTeal,
-      surface: kWhite,
+      primary: emeraldDefault,
+      secondary: emeraldBg,
+      surface: neutralWhite,
       error: kErrorColor,
-      onPrimary: kWhite,
-      onSecondary: kWhite,
-      onSurface: kTextBlack,
-      onError: kWhite,
+      onPrimary: neutralWhite,
+      onSecondary: neutralWhite,
+      onSurface: neutralBlack,
+      onError: neutralWhite,
     ),
     textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
     appBarTheme: AppBarTheme(
-      backgroundColor: kWhite,
+      backgroundColor: neutralWhite,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       titleTextStyle: GoogleFonts.inter(
-        color: kTextBlack,
+        color: neutralBlack,
         fontSize: 20,
         fontWeight: FontWeight.w600,
       ),
-      iconTheme: const IconThemeData(color: kTextBlack),
+      iconTheme: const IconThemeData(color: neutralBlack),
     ),
     dividerColor: kGrey2,
-    cardColor: kWhite,
+    cardColor: neutralWhite,
   );
 
   // ThemeData (Dark)
@@ -119,14 +119,14 @@ class AppColor {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Color(0xFF0B1220),
     colorScheme: const ColorScheme.dark(
-      primary: kPrimaryColor,
-      secondary: kTeal,
+      primary: emeraldDefault,
+      secondary: emeraldBg,
       surface: Color(0xFF111827),
       error: kErrorColor,
-      onPrimary: kWhite,
-      onSecondary: kWhite,
-      onSurface: kWhite,
-      onError: kWhite,
+      onPrimary: neutralWhite,
+      onSecondary: neutralWhite,
+      onSurface: neutralWhite,
+      onError: neutralWhite,
     ),
     textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
     appBarTheme: AppBarTheme(
@@ -134,11 +134,11 @@ class AppColor {
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       titleTextStyle: GoogleFonts.inter(
-        color: kWhite,
+        color: neutralWhite,
         fontSize: 20,
         fontWeight: FontWeight.w600,
       ),
-      iconTheme: const IconThemeData(color: kWhite),
+      iconTheme: const IconThemeData(color: neutralWhite),
     ),
     dividerColor: const Color(0xFF1F2937),
     cardColor: const Color(0xFF111827),

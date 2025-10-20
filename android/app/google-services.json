@@ -12,7 +12,20 @@
           "package_name": "com.example.eco_coin"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "881744304659-nddd866ktsbl76kljh7ei6f7keth9t4i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.eco_coin",
+            "certificate_hash": "dc69fc410dbf4315717928cc1ab4ce083331bf20"
+          }
+        },
+        {
+          "client_id": "881744304659-7ns4qcn0ku9has5k1umf8vu4p4k35ggl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAksCOkhimk46KbutDzaYKpBxTTR87KeIM"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "881744304659-7ns4qcn0ku9has5k1umf8vu4p4k35ggl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "881744304659-q6a2o0c738v7gt8fmv7cfteq0ho1vqls.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ecoCoin"
+              }
+            }
+          ]
         }
       }
     }
